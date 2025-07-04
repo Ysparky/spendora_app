@@ -1,0 +1,101 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isValidTimestamp(field) {
+      return field is timestamp;
+    }
+
+    function hasValidAmount(data) {
+      return data.amount is number && data.amount > 0;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && 
+        request.resource.data.keys().hasAll(['email', 'name', 'currency', 'createdAt']) &&
+        isValidTimestamp(request.resource.data.createdAt);
+      allow update: if isSignedIn() && isOwner(userId);
+      
+      // Transactions subcollection
+      match /transactions/{transactionId} {
+        allow read: if isSignedIn() && isOwner(userId);
+        allow create: if isSignedIn() && isOwner(userId) && 
+          hasValidAmount(request.resource.data) &&
+          request.resource.data.type in ['income', 'expense'] &&
+          isValidTimestamp(request.resource.data.date) &&
+          isValidTimestamp(request.resource.data.createdAt);
+        allow update: if isSignedIn() && isOwner(userId);
+        allow delete: if isSignedIn() && isOwner(userId);
+      }
+      
+      // Budgets subcollection
+      match /budgets/{budgetId} {
+        allow read: if isSignedIn() && isOwner(userId);
+        allow create: if isSignedIn() && isOwner(userId) &&
+          request.resource.data.targetAmount is number &&
+          request.resource.data.targetAmount > 0 &&
+          isValidTimestamp(request.resource.data.startDate) &&
+          isValidTimestamp(request.resource.data.endDate) &&
+          request.resource.data.startDate < request.resource.data.endDate;
+        allow update: if isSignedIn() && isOwner(userId);
+        allow delete: if isSignedIn() && isOwner(userId);
+      }
+
+      // Notifications subcollection
+      match /notifications/{notificationId} {
+        allow read: if isSignedIn() && isOwner(userId);
+        allow create: if false;  // Only created by Cloud Functions
+        allow update: if isSignedIn() && isOwner(userId) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['seen']);
+        allow delete: if isSignedIn() && isOwner(userId);
+      }
+    }
+
+    // Categories collection (shared + user-defined)
+    match /categories/{categoryId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && 
+        request.resource.data.userDefined == true &&
+        request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isSignedIn() && 
+        resource.data.userDefined == true &&
+        resource.data.userId == request.auth.uid;
+    }
+
+    // Groups collection (for future shared expenses)
+    match /groups/{groupId} {
+      allow read: if isSignedIn() && (
+        resource.data.ownerId == request.auth.uid ||
+        request.auth.uid in resource.data.members
+      );
+      allow create: if isSignedIn() &&
+        request.resource.data.ownerId == request.auth.uid &&
+        request.resource.data.members.hasAll([request.auth.uid]);
+      allow update: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+
+      // Group transactions subcollection
+      match /groupTransactions/{transactionId} {
+        allow read: if isSignedIn() && (
+          get(/databases/$(database)/documents/groups/$(groupId)).data.members.hasAny([request.auth.uid])
+        );
+        allow create: if isSignedIn() && 
+          get(/databases/$(database)/documents/groups/$(groupId)).data.members.hasAny([request.auth.uid]) &&
+          hasValidAmount(request.resource.data) &&
+          isValidTimestamp(request.resource.data.date);
+        allow update, delete: if isSignedIn() && resource.data.payerId == request.auth.uid;
+      }
+    }
+  }
+} 
