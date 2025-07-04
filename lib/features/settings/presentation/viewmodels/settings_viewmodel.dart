@@ -1,41 +1,28 @@
 import 'package:flutter/foundation.dart';
 import 'package:spendora_app/features/auth/domain/models/user.dart';
+import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:spendora_app/features/settings/domain/repositories/settings_repository.dart';
 
 class SettingsViewModel extends ChangeNotifier {
   final SettingsRepository _repository;
-  UserPreferences? _preferences;
+  final AuthProvider _authProvider;
   bool _isLoading = false;
   String? _error;
 
-  SettingsViewModel({required SettingsRepository repository})
-    : _repository = repository {
-    _loadPreferences();
-  }
+  SettingsViewModel({
+    required SettingsRepository repository,
+    required AuthProvider authProvider,
+  }) : _repository = repository,
+       _authProvider = authProvider;
 
   // Getters
-  UserPreferences? get preferences => _preferences;
+  UserPreferences? get preferences => _authProvider.user?.preferences;
   bool get isLoading => _isLoading;
   String? get error => _error;
   List<String> get supportedCurrencies => _repository.getSupportedCurrencies();
 
-  Future<void> _loadPreferences() async {
-    try {
-      _isLoading = true;
-      notifyListeners();
-
-      _preferences = await _repository.getUserPreferences();
-    } catch (e) {
-      _error = e.toString();
-      debugPrint('SettingsViewModel: Error loading preferences - $e');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
   Future<void> updateNotifications(bool enabled) async {
-    if (_preferences == null) return;
+    if (preferences == null) return;
 
     try {
       _isLoading = true;
@@ -44,12 +31,11 @@ class SettingsViewModel extends ChangeNotifier {
 
       final newPreferences = UserPreferences(
         notifications: enabled,
-        language: _preferences!.language,
-        currency: _preferences!.currency,
+        language: preferences!.language,
+        currency: preferences!.currency,
       );
 
       await _repository.updateUserPreferences(newPreferences);
-      _preferences = newPreferences;
     } catch (e) {
       _error = e.toString();
       debugPrint('SettingsViewModel: Error updating notifications - $e');
@@ -60,7 +46,7 @@ class SettingsViewModel extends ChangeNotifier {
   }
 
   Future<void> updateCurrency(String currency) async {
-    if (_preferences == null) return;
+    if (preferences == null) return;
 
     try {
       _isLoading = true;
@@ -68,33 +54,15 @@ class SettingsViewModel extends ChangeNotifier {
       notifyListeners();
 
       final newPreferences = UserPreferences(
-        notifications: _preferences!.notifications,
-        language: _preferences!.language,
+        notifications: preferences!.notifications,
+        language: preferences!.language,
         currency: currency,
       );
 
       await _repository.updateUserPreferences(newPreferences);
-      await _repository.updateProfile(currency: currency);
-      _preferences = newPreferences;
     } catch (e) {
       _error = e.toString();
       debugPrint('SettingsViewModel: Error updating currency - $e');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> updateProfile({String? name}) async {
-    try {
-      _isLoading = true;
-      _error = null;
-      notifyListeners();
-
-      await _repository.updateProfile(name: name);
-    } catch (e) {
-      _error = e.toString();
-      debugPrint('SettingsViewModel: Error updating profile - $e');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -107,7 +75,7 @@ class SettingsViewModel extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      await _repository.deleteAccount();
+      await _authProvider.deleteAccount();
     } catch (e) {
       _error = e.toString();
       debugPrint('SettingsViewModel: Error deleting account - $e');

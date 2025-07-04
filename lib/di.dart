@@ -87,13 +87,13 @@ void _initializeReports() {
 }
 
 void _initializeSettings() {
-  // Data sources
-
   // Repositories
-
-  // Use cases
+  sl.registerLazySingleton<SettingsRepository>(() => SettingsRepositoryImpl());
 
   // ViewModels
+  sl.registerFactory<SettingsViewModel>(
+    () => SettingsViewModel(repository: sl(), authProvider: sl()),
+  );
 }
 
 void _initializeOnboarding() {
@@ -101,13 +101,9 @@ void _initializeOnboarding() {
   sl.registerLazySingleton<OnboardingRepository>(
     () => OnboardingRepositoryImpl(localStorage: sl()),
   );
-  sl.registerLazySingleton<SettingsRepository>(() => SettingsRepositoryImpl());
 
   // ViewModels
   sl.registerFactory<OnboardingViewModel>(
     () => OnboardingViewModel(repository: sl()),
-  );
-  sl.registerFactory<SettingsViewModel>(
-    () => SettingsViewModel(repository: sl()),
   );
 }

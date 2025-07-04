@@ -15,26 +15,6 @@ class SettingsRepositoryImpl implements SettingsRepository {
        _auth = auth ?? firebase_auth.FirebaseAuth.instance;
 
   @override
-  Future<UserPreferences> getUserPreferences() async {
-    try {
-      final user = _auth.currentUser;
-      if (user == null) throw Exception('No user signed in');
-
-      // TODO: Load data from getCurrentUserData instead of firestore
-      final doc = await _firestore.collection('users').doc(user.uid).get();
-      if (!doc.exists) throw Exception('User data not found');
-
-      final data = doc.data()!;
-      return UserPreferences.fromJson(
-        data['preferences'] as Map<String, dynamic>,
-      );
-    } catch (e) {
-      debugPrint('SettingsRepository: Error getting user preferences - $e');
-      rethrow;
-    }
-  }
-
-  @override
   Future<void> updateUserPreferences(UserPreferences preferences) async {
     try {
       final user = _auth.currentUser;
@@ -45,28 +25,6 @@ class SettingsRepositoryImpl implements SettingsRepository {
       });
     } catch (e) {
       debugPrint('SettingsRepository: Error updating user preferences - $e');
-      rethrow;
-    }
-  }
-
-  @override
-  Future<void> updateProfile({String? name, String? currency}) async {
-    try {
-      final user = _auth.currentUser;
-      if (user == null) throw Exception('No user signed in');
-
-      final updates = <String, dynamic>{};
-      if (name != null) updates['name'] = name;
-      if (currency != null) {
-        updates['currency'] = currency;
-        updates['preferences.currency'] = currency;
-      }
-
-      if (updates.isNotEmpty) {
-        await _firestore.collection('users').doc(user.uid).update(updates);
-      }
-    } catch (e) {
-      debugPrint('SettingsRepository: Error updating profile - $e');
       rethrow;
     }
   }
@@ -86,22 +44,5 @@ class SettingsRepositoryImpl implements SettingsRepository {
       'NZD', // New Zealand Dollar
       'SGD', // Singapore Dollar
     ];
-  }
-
-  @override
-  Future<void> deleteAccount() async {
-    try {
-      final user = _auth.currentUser;
-      if (user == null) throw Exception('No user signed in');
-
-      // Delete Firestore data first
-      await _firestore.collection('users').doc(user.uid).delete();
-
-      // Then delete the auth account
-      await user.delete();
-    } catch (e) {
-      debugPrint('SettingsRepository: Error deleting account - $e');
-      rethrow;
-    }
   }
 }

@@ -79,7 +79,6 @@ class AuthRemoteDataSource {
         'uid': result.user!.uid,
         'email': email,
         'name': name,
-        'currency': currency,
         'createdAt': FieldValue.serverTimestamp(),
         'preferences': {
           'notifications': true,
@@ -153,7 +152,6 @@ class AuthRemoteDataSource {
       final updates = <String, dynamic>{};
       if (name != null) updates['name'] = name;
       if (currency != null) {
-        updates['currency'] = currency;
         updates['preferences.currency'] = currency;
       }
 

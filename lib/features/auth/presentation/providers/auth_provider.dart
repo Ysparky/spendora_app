@@ -170,4 +170,24 @@ class AuthProvider extends ChangeNotifier {
       rethrow;
     }
   }
+
+  // Delete account
+  Future<void> deleteAccount() async {
+    try {
+      debugPrint('AuthProvider: Deleting account');
+      _error = null;
+      _setStatus(AuthStatus.loading);
+
+      await _authRepository.deleteAccount();
+      debugPrint('AuthProvider: Account deleted successfully');
+
+      _user = null;
+      _setStatus(AuthStatus.unauthenticated);
+    } catch (e) {
+      debugPrint('AuthProvider: Account deletion failed - $e');
+      _error = e.toString();
+      _setStatus(AuthStatus.error);
+      rethrow;
+    }
+  }
 }
