@@ -1,5 +1,10 @@
 import 'package:get_it/get_it.dart';
-import 'package:spendora_app/core/services/firebase_service.dart';
+import 'package:spendora_app/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:spendora_app/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:spendora_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:spendora_app/features/auth/presentation/viewmodels/login_viewmodel.dart';
+import 'package:spendora_app/features/auth/presentation/viewmodels/register_viewmodel.dart';
 
 /// Global ServiceLocator instance
 final sl = GetIt.instance;
@@ -19,7 +24,6 @@ Future<void> initializeDependencies() async {
 
 void _initializeCore() {
   // Services
-  sl.registerLazySingleton<FirebaseService>(() => FirebaseService());
 
   // Utils
 
@@ -28,12 +32,24 @@ void _initializeCore() {
 
 void _initializeAuth() {
   // Data sources
+  sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSource());
 
   // Repositories
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(dataSource: sl()),
+  );
 
-  // Use cases
+  // Providers
+  sl.registerLazySingleton<AuthProvider>(
+    () => AuthProvider(authRepository: sl()),
+  );
 
   // ViewModels
+  sl.registerFactory<LoginViewModel>(() => LoginViewModel(authProvider: sl()));
+
+  sl.registerFactory<RegisterViewModel>(
+    () => RegisterViewModel(authProvider: sl()),
+  );
 }
 
 void _initializeTransactions() {
