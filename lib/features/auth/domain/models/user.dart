@@ -10,7 +10,6 @@ abstract class User with _$User {
     required String uid,
     required String email,
     required String name,
-    @Default('USD') String currency,
     required DateTime createdAt,
     required UserPreferences preferences,
   }) = _User;

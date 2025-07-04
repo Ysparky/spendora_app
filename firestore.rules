@@ -23,7 +23,8 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isSignedIn() && isOwner(userId);
       allow create: if isSignedIn() && isOwner(userId) && 
-        request.resource.data.keys().hasAll(['email', 'name', 'currency', 'createdAt']) &&
+        request.resource.data.keys().hasAll(['email', 'name', 'createdAt', 'preferences']) &&
+        request.resource.data.preferences.keys().hasAll(['notifications', 'language', 'currency']) &&
         isValidTimestamp(request.resource.data.createdAt);
       allow update: if isSignedIn() && isOwner(userId);
       
@@ -52,6 +53,14 @@ service cloud.firestore {
         allow delete: if isSignedIn() && isOwner(userId);
       }
 
+      // Categories subcollection
+      match /categories/{categoryId} {
+        allow read: if isSignedIn() && isOwner(userId);
+        allow create: if isSignedIn() && isOwner(userId);
+        allow update: if isSignedIn() && isOwner(userId);
+        allow delete: if isSignedIn() && isOwner(userId);
+      }
+
       // Notifications subcollection
       match /notifications/{notificationId} {
         allow read: if isSignedIn() && isOwner(userId);
@@ -60,17 +69,6 @@ service cloud.firestore {
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['seen']);
         allow delete: if isSignedIn() && isOwner(userId);
       }
-    }
-
-    // Categories collection (shared + user-defined)
-    match /categories/{categoryId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn() && 
-        request.resource.data.userDefined == true &&
-        request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isSignedIn() && 
-        resource.data.userDefined == true &&
-        resource.data.userId == request.auth.uid;
     }
 
     // Groups collection (for future shared expenses)

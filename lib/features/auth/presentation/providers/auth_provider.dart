@@ -88,7 +88,6 @@ class AuthProvider extends ChangeNotifier {
     required String email,
     required String password,
     required String name,
-    String currency = 'USD',
   }) async {
     try {
       debugPrint('AuthProvider: Starting registration for $email');
@@ -99,7 +98,6 @@ class AuthProvider extends ChangeNotifier {
         email: email,
         password: password,
         name: name,
-        currency: currency,
       );
       debugPrint('AuthProvider: Registration successful');
     } catch (e) {
@@ -147,12 +145,12 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // Update profile
-  Future<void> updateProfile({String? name, String? currency}) async {
+  Future<void> updateProfile(String name) async {
     try {
       debugPrint('AuthProvider: Updating profile');
       _error = null;
       _setStatus(AuthStatus.loading);
-      await _authRepository.updateProfile(name: name, currency: currency);
+      await _authRepository.updateProfile(name);
 
       // Refresh user data
       final userData = await _authRepository.getCurrentUserData();
@@ -165,6 +163,26 @@ class AuthProvider extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('AuthProvider: Profile update failed - $e');
+      _error = e.toString();
+      _setStatus(AuthStatus.error);
+      rethrow;
+    }
+  }
+
+  // Delete account
+  Future<void> deleteAccount() async {
+    try {
+      debugPrint('AuthProvider: Deleting account');
+      _error = null;
+      _setStatus(AuthStatus.loading);
+
+      await _authRepository.deleteAccount();
+      debugPrint('AuthProvider: Account deleted successfully');
+
+      _user = null;
+      _setStatus(AuthStatus.unauthenticated);
+    } catch (e) {
+      debugPrint('AuthProvider: Account deletion failed - $e');
       _error = e.toString();
       _setStatus(AuthStatus.error);
       rethrow;

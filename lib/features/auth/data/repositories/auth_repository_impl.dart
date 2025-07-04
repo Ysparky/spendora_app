@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:flutter/foundation.dart';
 import 'package:spendora_app/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:spendora_app/features/auth/domain/models/user.dart';
 import 'package:spendora_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _dataSource;
@@ -21,10 +23,14 @@ class AuthRepositoryImpl implements AuthRepository {
     final userData = await _dataSource.getUserData(currentUser.uid);
     if (userData == null) return null;
 
-    return User.fromJson({
-      ...userData,
-      'createdAt': userData['createdAt'].toDate().toIso8601String(),
-    });
+    // Handle potential null timestamp during document creation
+    final createdAt = userData['createdAt'];
+    debugPrint('createdAt: $createdAt');
+    final createdAtString = createdAt != null
+        ? (createdAt as Timestamp).toDate().toIso8601String()
+        : DateTime.now().toIso8601String(); // Fallback to current time if null
+
+    return User.fromJson({...userData, 'createdAt': createdAtString});
   }
 
   @override
@@ -40,13 +46,11 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     required String name,
-    String currency = 'USD',
   }) async {
     await _dataSource.registerWithEmailAndPassword(
       email: email,
       password: password,
       name: name,
-      currency: currency,
     );
   }
 
@@ -61,8 +65,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> updateProfile({String? name, String? currency}) async {
-    await _dataSource.updateProfile(name: name, currency: currency);
+  Future<void> updateProfile(String name) async {
+    await _dataSource.updateProfile(name);
   }
 
   @override

@@ -9,6 +9,8 @@ import 'package:spendora_app/di.dart';
 import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:spendora_app/features/auth/presentation/viewmodels/login_viewmodel.dart';
 import 'package:spendora_app/features/auth/presentation/viewmodels/register_viewmodel.dart';
+import 'package:spendora_app/features/onboarding/presentation/viewmodels/onboarding_viewmodel.dart';
+import 'package:spendora_app/features/settings/presentation/viewmodels/settings_viewmodel.dart';
 import 'package:spendora_app/firebase_options.dart';
 
 void main() async {
@@ -27,25 +29,26 @@ void main() async {
   );
 
   // Initialize dependencies
-  await initializeDependencies();
+  await setupDependencies();
 
   // Initialize router with AuthProvider
-  final authProvider = sl<AuthProvider>();
-  AppRouter.initialize(authProvider);
+  AppRouter.initialize(sl<AuthProvider>());
 
-  runApp(const MyApp());
+  runApp(const SpendoraApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class SpendoraApp extends StatelessWidget {
+  const SpendoraApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: sl<AuthProvider>()),
+        ChangeNotifierProvider(create: (_) => sl<AuthProvider>()),
         ChangeNotifierProvider(create: (_) => sl<LoginViewModel>()),
         ChangeNotifierProvider(create: (_) => sl<RegisterViewModel>()),
+        ChangeNotifierProvider(create: (_) => sl<OnboardingViewModel>()),
+        ChangeNotifierProvider(create: (_) => sl<SettingsViewModel>()),
       ],
       child: MaterialApp.router(
         title: 'Spendora',
