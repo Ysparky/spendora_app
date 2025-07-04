@@ -99,7 +99,8 @@ void _initializeSettings() {
 void _initializeOnboarding() {
   // Repositories
   sl.registerLazySingleton<OnboardingRepository>(
-    () => OnboardingRepositoryImpl(localStorage: sl()),
+    () =>
+        OnboardingRepositoryImpl(localStorage: sl(), settingsRepository: sl()),
   );
 
   // ViewModels

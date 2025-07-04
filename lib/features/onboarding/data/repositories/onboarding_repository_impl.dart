@@ -2,22 +2,27 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:spendora_app/core/services/local_storage_service.dart';
+import 'package:spendora_app/features/auth/domain/models/user.dart';
 import 'package:spendora_app/features/onboarding/domain/models/onboarding_state.dart';
 import 'package:spendora_app/features/onboarding/domain/repositories/onboarding_repository.dart';
+import 'package:spendora_app/features/settings/domain/repositories/settings_repository.dart';
 import 'package:spendora_app/features/transactions/domain/models/category.dart';
 
 class OnboardingRepositoryImpl implements OnboardingRepository {
   final FirebaseFirestore _firestore;
   final firebase_auth.FirebaseAuth _auth;
   final LocalStorageService _localStorage;
+  final SettingsRepository _settingsRepository;
 
   OnboardingRepositoryImpl({
     FirebaseFirestore? firestore,
     firebase_auth.FirebaseAuth? auth,
     required LocalStorageService localStorage,
+    required SettingsRepository settingsRepository,
   }) : _firestore = firestore ?? FirebaseFirestore.instance,
        _auth = auth ?? firebase_auth.FirebaseAuth.instance,
-       _localStorage = localStorage;
+       _localStorage = localStorage,
+       _settingsRepository = settingsRepository;
 
   @override
   Future<OnboardingState> getOnboardingState() async {
@@ -29,9 +34,10 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
       if (!doc.exists) throw Exception('User data not found');
 
       final data = doc.data()!;
+      final preferences = UserPreferences.fromJson(data['preferences']);
       return OnboardingState(
         hasCompletedOnboarding: _localStorage.hasCompletedOnboarding,
-        selectedCurrency: data['currency'] as String? ?? 'USD',
+        selectedCurrency: preferences.currency,
         hasLoadedDefaultCategories: false,
       );
     } catch (e) {
@@ -54,10 +60,13 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
       );
 
       // Update Firestore if currency changed
-      await _firestore.collection('users').doc(user.uid).update({
-        'currency': state.selectedCurrency,
-        'preferences.currency': state.selectedCurrency,
-      });
+      await _settingsRepository.updateUserPreferences(
+        UserPreferences(
+          notifications: true,
+          language: 'en',
+          currency: state.selectedCurrency,
+        ),
+      );
     } catch (e) {
       foundation.debugPrint(
         'OnboardingRepository: Error updating onboarding state - $e',
