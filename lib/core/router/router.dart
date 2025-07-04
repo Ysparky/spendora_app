@@ -51,24 +51,12 @@ class AppRouter {
     final isAuthRoute =
         state.matchedLocation == login || state.matchedLocation == register;
 
-    debugPrint('AppRouter: Handling redirect');
-    debugPrint('AppRouter: isAuthenticated = $isAuthenticated');
-    debugPrint('AppRouter: current location = ${state.matchedLocation}');
-    debugPrint('AppRouter: isAuthRoute = $isAuthRoute');
-
     // If not authenticated and not on an auth route, redirect to login
-    if (!isAuthenticated && !isAuthRoute) {
-      debugPrint('AppRouter: Redirecting to login');
-      return login;
-    }
+    if (!isAuthenticated && !isAuthRoute) return login;
 
     // If authenticated and on an auth route, redirect to home
-    if (isAuthenticated && isAuthRoute) {
-      debugPrint('AppRouter: Redirecting to home');
-      return home;
-    }
+    if (isAuthenticated && isAuthRoute) return home;
 
-    debugPrint('AppRouter: No redirect needed');
     return null;
   }
 }
