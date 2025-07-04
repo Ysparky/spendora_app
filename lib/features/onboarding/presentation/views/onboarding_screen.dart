@@ -164,7 +164,7 @@ class _CurrencySelectionPage extends StatelessWidget {
                   trailing: isSelected
                       ? const Icon(Icons.check_circle)
                       : const Icon(Icons.circle_outlined),
-                  onTap: () => viewModel.updateCurrency(currency),
+                  onTap: () => viewModel.selectCurrency(currency),
                 );
               },
             ),

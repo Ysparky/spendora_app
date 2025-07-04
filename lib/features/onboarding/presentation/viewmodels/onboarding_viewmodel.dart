@@ -29,59 +29,16 @@ class OnboardingViewModel extends ChangeNotifier {
       _state = await _repository.getOnboardingState();
     } catch (e) {
       _error = e.toString();
-      debugPrint('OnboardingViewModel: Error loading state - $e');
+      debugPrint('OnboardingViewModel: Error loading onboarding state - $e');
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<void> updateCurrency(String currency) async {
-    try {
-      _isLoading = true;
-      _error = null;
-      notifyListeners();
-
-      final newState = OnboardingState(
-        hasCompletedOnboarding: _state.hasCompletedOnboarding,
-        selectedCurrency: currency,
-        hasLoadedDefaultCategories: _state.hasLoadedDefaultCategories,
-      );
-
-      await _repository.updateOnboardingState(newState);
-      _state = newState;
-    } catch (e) {
-      _error = e.toString();
-      debugPrint('OnboardingViewModel: Error updating currency - $e');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> loadDefaultCategories() async {
-    try {
-      _isLoading = true;
-      _error = null;
-      notifyListeners();
-
-      await _repository.loadDefaultCategories();
-
-      final newState = OnboardingState(
-        hasCompletedOnboarding: _state.hasCompletedOnboarding,
-        selectedCurrency: _state.selectedCurrency,
-        hasLoadedDefaultCategories: true,
-      );
-
-      await _repository.updateOnboardingState(newState);
-      _state = newState;
-    } catch (e) {
-      _error = e.toString();
-      debugPrint('OnboardingViewModel: Error loading categories - $e');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+  void selectCurrency(String currency) {
+    _state = _state.copyWith(selectedCurrency: currency);
+    notifyListeners();
   }
 
   Future<void> completeOnboarding() async {
@@ -90,17 +47,22 @@ class OnboardingViewModel extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final newState = OnboardingState(
+      // Update onboarding state with selected currency and completion status
+      final newState = _state.copyWith(
         hasCompletedOnboarding: true,
-        selectedCurrency: _state.selectedCurrency,
-        hasLoadedDefaultCategories: _state.hasLoadedDefaultCategories,
+        hasLoadedDefaultCategories: true,
       );
 
+      // Load default categories first
+      await _repository.loadDefaultCategories();
+
+      // Then update the onboarding state
       await _repository.updateOnboardingState(newState);
       _state = newState;
     } catch (e) {
       _error = e.toString();
       debugPrint('OnboardingViewModel: Error completing onboarding - $e');
+      rethrow;
     } finally {
       _isLoading = false;
       notifyListeners();
