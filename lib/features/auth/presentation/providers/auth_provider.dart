@@ -88,7 +88,6 @@ class AuthProvider extends ChangeNotifier {
     required String email,
     required String password,
     required String name,
-    String currency = 'USD',
   }) async {
     try {
       debugPrint('AuthProvider: Starting registration for $email');
@@ -99,7 +98,6 @@ class AuthProvider extends ChangeNotifier {
         email: email,
         password: password,
         name: name,
-        currency: currency,
       );
       debugPrint('AuthProvider: Registration successful');
     } catch (e) {
@@ -147,12 +145,12 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // Update profile
-  Future<void> updateProfile({String? name, String? currency}) async {
+  Future<void> updateProfile(String name) async {
     try {
       debugPrint('AuthProvider: Updating profile');
       _error = null;
       _setStatus(AuthStatus.loading);
-      await _authRepository.updateProfile(name: name, currency: currency);
+      await _authRepository.updateProfile(name);
 
       // Refresh user data
       final userData = await _authRepository.getCurrentUserData();

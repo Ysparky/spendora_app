@@ -148,7 +148,7 @@ class SettingsScreen extends StatelessWidget {
           FilledButton(
             onPressed: () {
               context.read<AuthProvider>().updateProfile(
-                name: nameController.text.trim(),
+                nameController.text.trim(),
               );
               context.pop();
             },

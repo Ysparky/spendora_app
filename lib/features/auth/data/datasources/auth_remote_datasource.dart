@@ -58,7 +58,6 @@ class AuthRemoteDataSource {
     required String email,
     required String password,
     required String name,
-    String currency = 'USD',
   }) async {
     try {
       debugPrint('AuthRemoteDataSource: Starting registration for $email');
@@ -83,7 +82,7 @@ class AuthRemoteDataSource {
         'preferences': {
           'notifications': true,
           'language': 'en',
-          'currency': currency,
+          'currency': 'USD',
         },
       });
 
@@ -142,7 +141,7 @@ class AuthRemoteDataSource {
     }
   }
 
-  Future<void> updateProfile({String? name, String? currency}) async {
+  Future<void> updateProfile(String name) async {
     try {
       final user = _auth.currentUser;
       if (user == null) throw Exception('No user signed in');
@@ -150,10 +149,7 @@ class AuthRemoteDataSource {
       debugPrint('AuthRemoteDataSource: Updating profile for ${user.email}');
 
       final updates = <String, dynamic>{};
-      if (name != null) updates['name'] = name;
-      if (currency != null) {
-        updates['preferences.currency'] = currency;
-      }
+      updates['name'] = name;
 
       if (updates.isNotEmpty) {
         await _firestore.collection('users').doc(user.uid).update(updates);

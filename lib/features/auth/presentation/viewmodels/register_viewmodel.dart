@@ -16,7 +16,6 @@ class RegisterViewModel with ChangeNotifier {
     required String email,
     required String password,
     required String name,
-    String currency = 'USD',
   }) async {
     try {
       _isLoading = true;
@@ -27,7 +26,6 @@ class RegisterViewModel with ChangeNotifier {
         email: email,
         password: password,
         name: name,
-        currency: currency,
       );
       return _authProvider.isAuthenticated;
     } catch (e) {

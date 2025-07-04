@@ -40,13 +40,11 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     required String name,
-    String currency = 'USD',
   }) async {
     await _dataSource.registerWithEmailAndPassword(
       email: email,
       password: password,
       name: name,
-      currency: currency,
     );
   }
 
@@ -61,8 +59,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> updateProfile({String? name, String? currency}) async {
-    await _dataSource.updateProfile(name: name, currency: currency);
+  Future<void> updateProfile(String name) async {
+    await _dataSource.updateProfile(name);
   }
 
   @override

@@ -12,14 +12,13 @@ abstract class AuthRepository {
     required String email,
     required String password,
     required String name,
-    String currency = 'USD',
   });
 
   Future<void> signOut();
 
   Future<void> deleteAccount();
 
-  Future<void> updateProfile({String? name, String? currency});
+  Future<void> updateProfile(String name);
 
   Future<void> updateEmail(String newEmail);
 

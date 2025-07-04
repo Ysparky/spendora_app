@@ -23,7 +23,8 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isSignedIn() && isOwner(userId);
       allow create: if isSignedIn() && isOwner(userId) && 
-        request.resource.data.keys().hasAll(['email', 'name', 'currency', 'createdAt']) &&
+        request.resource.data.keys().hasAll(['email', 'name', 'createdAt', 'preferences']) &&
+        request.resource.data.preferences.keys().hasAll(['notifications', 'language', 'currency']) &&
         isValidTimestamp(request.resource.data.createdAt);
       allow update: if isSignedIn() && isOwner(userId);
       
