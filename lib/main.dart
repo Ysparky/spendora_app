@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:spendora_app/core/theme/app_theme.dart';
 import 'package:spendora_app/di.dart';
+import 'package:spendora_app/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   await initializeDependencies();
   runApp(const SpendoraApp());
 }

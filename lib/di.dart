@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:spendora_app/core/services/firebase_service.dart';
 
 /// Global ServiceLocator instance
 final sl = GetIt.instance;
@@ -18,6 +19,7 @@ Future<void> initializeDependencies() async {
 
 void _initializeCore() {
   // Services
+  sl.registerLazySingleton<FirebaseService>(() => FirebaseService());
 
   // Utils
 

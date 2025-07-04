@@ -1,0 +1,33 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "spendora-88663",
+          "appId": "1:961436030319:android:a5be312ef62264d871849a",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "spendora-88663",
+          "appId": "1:961436030319:ios:fdc11dcaa5b2aaf171849a",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "spendora-88663",
+          "configurations": {
+            "android": "1:961436030319:android:a5be312ef62264d871849a",
+            "ios": "1:961436030319:ios:fdc11dcaa5b2aaf171849a"
+          }
+        }
+      }
+    }
+  }
+}

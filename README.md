@@ -18,6 +18,25 @@ Spendora is a modern personal finance management app built with Flutter that hel
 - Dart SDK (^3.0.0)
 - iOS development tools (for iOS development)
 - Android development tools (for Android development)
+- Firebase project setup
+
+### Firebase Setup
+
+1. Create a new Firebase project at [Firebase Console](https://console.firebase.google.com/)
+
+2. Install FlutterFire CLI:
+```bash
+dart pub global activate flutterfire_cli
+```
+
+3. Configure Firebase for your app:
+```bash
+flutterfire configure
+```
+
+4. Copy the generated `lib/firebase_options.dart` file to your project
+   - Note: This file contains sensitive information and is not included in version control
+   - A template file `lib/firebase_options.template.dart` is provided for reference
 
 ### Installation
 
@@ -32,7 +51,11 @@ cd spendora_app
 flutter pub get
 ```
 
-3. Run the app:
+3. Set up Firebase configuration:
+   - Follow the Firebase Setup instructions above
+   - Ensure `lib/firebase_options.dart` is properly configured
+
+4. Run the app:
 ```bash
 flutter run
 ```

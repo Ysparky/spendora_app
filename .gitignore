@@ -63,6 +63,12 @@ coverage/
 .history
 .svn/
 
+# Firebase configuration
+lib/firebase_options.dart
+.firebase/
+**/google-services.json
+**/GoogleService-Info.plist
+
 # Android specific
 **/android/**/gradle-wrapper.jar
 **/android/.gradle
