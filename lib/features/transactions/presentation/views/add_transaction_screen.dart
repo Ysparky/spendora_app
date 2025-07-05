@@ -33,20 +33,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     super.dispose();
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
-
   void _addTag() {
     final tag = _tagController.text.trim();
     if (tag.isNotEmpty && !_tags.contains(tag)) {
@@ -63,13 +49,28 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     });
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
     final amount = double.tryParse(_amountController.text);
     if (amount == null) return;
 
-    if (_selectedCategoryId == null) {
+    // Only validate category for expense transactions
+    if (_type == TransactionType.expense && _selectedCategoryId == null) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Please select a category')));
@@ -80,7 +81,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       id: '', // Will be set by Firestore
       amount: amount,
       type: _type,
-      categoryId: _selectedCategoryId!,
+      categoryId: _selectedCategoryId,
       tags: _tags,
       date: _selectedDate,
       description: _descriptionController.text.trim(),
@@ -137,6 +138,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       onSelectionChanged: (Set<TransactionType> selected) {
                         setState(() {
                           _type = selected.first;
+                          // Clear category when switching to income
+                          if (_type == TransactionType.income) {
+                            _selectedCategoryId = null;
+                          }
                         });
                       },
                     ),
@@ -145,10 +150,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     // Amount
                     TextFormField(
                       controller: _amountController,
-                      decoration: const InputDecoration(
-                        labelText: 'Amount',
-                        prefixText: '\$',
-                      ),
+                      decoration: const InputDecoration(labelText: 'Amount'),
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -178,45 +180,47 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     const SizedBox(height: 16),
 
                     // Category
-                    if (viewModel.isCategoriesLoading)
-                      const Center(child: CircularProgressIndicator())
-                    else if (viewModel.error != null)
-                      Text(
-                        'Error loading categories: ${viewModel.error}',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
+                    if (_type == TransactionType.expense)
+                      if (viewModel.isCategoriesLoading)
+                        const Center(child: CircularProgressIndicator())
+                      else if (viewModel.error != null)
+                        Text(
+                          'Error loading categories: ${viewModel.error}',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        )
+                      else
+                        DropdownButtonFormField<String>(
+                          value: _selectedCategoryId,
+                          decoration: const InputDecoration(
+                            labelText: 'Category',
+                          ),
+                          items: viewModel.categories.map((category) {
+                            return DropdownMenuItem(
+                              value: category.id,
+                              child: Row(
+                                children: [
+                                  Text(category.icon),
+                                  const SizedBox(width: 8),
+                                  Text(category.name),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedCategoryId = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (_type == TransactionType.expense &&
+                                (value == null || value.isEmpty)) {
+                              return 'Please select a category';
+                            }
+                            return null;
+                          },
                         ),
-                      )
-                    else
-                      DropdownButtonFormField<String>(
-                        value: _selectedCategoryId,
-                        decoration: const InputDecoration(
-                          labelText: 'Category',
-                        ),
-                        items: viewModel.categories.map((category) {
-                          return DropdownMenuItem(
-                            value: category.id,
-                            child: Row(
-                              children: [
-                                Text(category.icon),
-                                const SizedBox(width: 8),
-                                Text(category.name),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedCategoryId = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a category';
-                          }
-                          return null;
-                        },
-                      ),
                     const SizedBox(height: 16),
 
                     // Date
@@ -259,7 +263,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                             .toList(),
                       ),
                     ],
-                    const SizedBox(height: 16),
 
                     // Recurring Transaction
                     SwitchListTile(

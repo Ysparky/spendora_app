@@ -78,9 +78,11 @@ class DashboardRepositoryImpl implements DashboardRepository {
           totalIncome += transaction.amount;
         } else {
           totalExpenses += transaction.amount;
-          categoryTotals[transaction.categoryId] =
-              (categoryTotals[transaction.categoryId] ?? 0) +
-              transaction.amount;
+          if (transaction.categoryId != null) {
+            categoryTotals[transaction.categoryId!] =
+                (categoryTotals[transaction.categoryId!] ?? 0) +
+                transaction.amount;
+          }
         }
       }
 
@@ -123,7 +125,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
           description: transaction.description,
           amount: transaction.amount,
           date: transaction.date,
-          categoryId: transaction.categoryId,
+          categoryId: transaction.categoryId!,
           categoryName: category['name'] as String,
           categoryIcon: category['icon'] as String,
           type: transaction.type.toString(),

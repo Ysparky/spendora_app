@@ -30,7 +30,7 @@ abstract class Transaction with _$Transaction {
     required String id,
     required double amount,
     required TransactionType type,
-    required String categoryId,
+    String? categoryId,
     required List<String> tags,
     required DateTime date,
     required String description,

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:spendora_app/core/theme/app_theme.dart';
 import 'package:spendora_app/features/dashboard/domain/models/dashboard_summary.dart';
 import 'package:spendora_app/features/dashboard/presentation/viewmodels/dashboard_viewmodel.dart';
+import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -322,9 +323,9 @@ class _RecentTransactionsCard extends StatelessWidget {
                 trailing: Text(
                   currencyFormat.format(transaction.amount),
                   style: theme.textTheme.bodyLarge?.copyWith(
-                    color: transaction.type == 'income'
-                        ? AppTheme.light(context).colorScheme.primary
-                        : AppTheme.light(context).colorScheme.error,
+                    color: transaction.type == TransactionType.income.toString()
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.error,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

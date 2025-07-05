@@ -65,9 +65,11 @@ class TransactionViewModel extends ChangeNotifier {
 
       for (final transaction in transactions) {
         if (transaction.type == TransactionType.expense) {
-          _categoryTotals[transaction.categoryId] =
-              (_categoryTotals[transaction.categoryId] ?? 0) +
-              transaction.amount;
+          if (transaction.categoryId != null) {
+            _categoryTotals[transaction.categoryId!] =
+                (_categoryTotals[transaction.categoryId!] ?? 0) +
+                transaction.amount;
+          }
           _totalExpenses += transaction.amount;
         }
       }
