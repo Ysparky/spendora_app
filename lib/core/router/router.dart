@@ -9,6 +9,7 @@ import 'package:spendora_app/features/dashboard/presentation/views/dashboard_scr
 import 'package:spendora_app/features/onboarding/presentation/views/onboarding_screen.dart';
 import 'package:spendora_app/features/settings/presentation/views/settings_screen.dart';
 import 'package:spendora_app/features/transactions/presentation/views/add_transaction_screen.dart';
+import 'package:spendora_app/features/transactions/presentation/views/categories_overview_screen.dart';
 import 'package:spendora_app/features/transactions/presentation/views/transaction_list_screen.dart';
 
 class AppRouter {
@@ -57,7 +58,11 @@ class AppRouter {
         GoRoute(
           path: transactions,
           name: 'transactions',
-          builder: (context, state) => const TransactionListScreen(),
+          builder: (context, state) => TransactionListScreen(
+            categoryId: state.extra is Map
+                ? (state.extra as Map)['categoryId'] as String?
+                : null,
+          ),
         ),
         GoRoute(
           path: addTransaction,
@@ -68,6 +73,10 @@ class AppRouter {
           path: dashboard,
           name: 'dashboard',
           builder: (context, state) => const DashboardScreen(),
+        ),
+        GoRoute(
+          path: '/categories',
+          builder: (context, state) => const CategoriesOverviewScreen(),
         ),
         GoRoute(
           path: home,

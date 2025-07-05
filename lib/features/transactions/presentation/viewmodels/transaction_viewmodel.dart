@@ -10,6 +10,8 @@ class TransactionViewModel extends ChangeNotifier {
   String? _error;
   List<Category> _categories = [];
   List<Transaction>? _transactions;
+  final Map<String, double> _categoryTotals = {};
+  double _totalExpenses = 0;
   DateTime _startDate = DateTime.now().subtract(const Duration(days: 30));
   DateTime _endDate = DateTime(
     DateTime.now().year,
@@ -27,6 +29,8 @@ class TransactionViewModel extends ChangeNotifier {
   List<Transaction>? get transactions => _transactions;
   DateTime get startDate => _startDate;
   DateTime get endDate => _endDate;
+  Map<String, double> get categoryTotals => _categoryTotals;
+  double get totalExpenses => _totalExpenses;
 
   TransactionViewModel({required TransactionRepository repository})
     : _repository = repository {
@@ -39,6 +43,7 @@ class TransactionViewModel extends ChangeNotifier {
       notifyListeners();
 
       _categories = await _repository.getCategories();
+      await _loadCategoryTotals();
       _error = null;
     } catch (e) {
       _error = 'Failed to load categories: $e';
@@ -46,6 +51,38 @@ class TransactionViewModel extends ChangeNotifier {
       _isCategoriesLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> _loadCategoryTotals() async {
+    try {
+      final transactions = await _repository.getTransactions(
+        startDate: _startDate,
+        endDate: _endDate,
+      );
+
+      _categoryTotals.clear();
+      _totalExpenses = 0;
+
+      for (final transaction in transactions) {
+        if (transaction.type == TransactionType.expense) {
+          _categoryTotals[transaction.categoryId] =
+              (_categoryTotals[transaction.categoryId] ?? 0) +
+              transaction.amount;
+          _totalExpenses += transaction.amount;
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading category totals: $e');
+    }
+  }
+
+  double getCategoryPercentage(String categoryId) {
+    if (_totalExpenses == 0) return 0;
+    return (_categoryTotals[categoryId] ?? 0) / _totalExpenses * 100;
+  }
+
+  double getCategoryAmount(String categoryId) {
+    return _categoryTotals[categoryId] ?? 0;
   }
 
   Future<void> loadTransactions() async {
@@ -66,11 +103,32 @@ class TransactionViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> loadTransactionsByCategory(String categoryId) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      _transactions = await _repository.getTransactionsByCategory(
+        categoryId,
+        startDate: _startDate,
+        endDate: _endDate,
+      );
+    } catch (e) {
+      _error = 'Failed to load transactions for category';
+      debugPrint(
+        'TransactionViewModel: Error loading category transactions - $e',
+      );
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> setDateRange(DateTime start, DateTime end) async {
     _startDate = start;
     _endDate = end;
     notifyListeners();
-    await loadTransactions();
   }
 
   Future<void> createTransaction(Transaction transaction) async {

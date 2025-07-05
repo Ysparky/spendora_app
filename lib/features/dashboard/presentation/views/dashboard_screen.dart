@@ -232,44 +232,50 @@ class _TopCategoriesCard extends StatelessWidget {
               children: [
                 Text('Top Categories', style: theme.textTheme.titleMedium),
                 TextButton(
-                  onPressed: () => context.push('/transactions'),
+                  onPressed: () => context.push('/categories'),
                   child: const Text('See All'),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             ...categories.map(
-              (category) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  children: [
-                    Text(category.icon),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            category.name,
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                          const SizedBox(height: 4),
-                          LinearProgressIndicator(
-                            value: category.percentage / 100,
-                            backgroundColor: theme.colorScheme.primary
-                                .withValues(alpha: 0.1),
-                          ),
-                        ],
+              (category) => InkWell(
+                onTap: () => context.push(
+                  '/transactions',
+                  extra: {'categoryId': category.categoryId},
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: [
+                      Text(category.icon),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              category.name,
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                            const SizedBox(height: 4),
+                            LinearProgressIndicator(
+                              value: category.percentage / 100,
+                              backgroundColor: theme.colorScheme.primary
+                                  .withValues(alpha: 0.1),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Text(
-                      currencyFormat.format(category.amount),
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                      const SizedBox(width: 16),
+                      Text(
+                        currencyFormat.format(category.amount),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

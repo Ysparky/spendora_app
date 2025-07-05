@@ -7,18 +7,29 @@ import 'package:spendora_app/features/transactions/domain/models/transaction.dar
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
 
 class TransactionListScreen extends StatefulWidget {
-  const TransactionListScreen({super.key});
+  final String? categoryId;
+
+  const TransactionListScreen({super.key, this.categoryId});
 
   @override
   State<TransactionListScreen> createState() => _TransactionListScreenState();
 }
 
 class _TransactionListScreenState extends State<TransactionListScreen> {
+  Future<void> _refreshTransactions() async {
+    final viewModel = context.read<TransactionViewModel>();
+    if (widget.categoryId != null) {
+      await viewModel.loadTransactionsByCategory(widget.categoryId!);
+    } else {
+      await viewModel.loadTransactions();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TransactionViewModel>().loadTransactions();
+      _refreshTransactions();
     });
   }
 
@@ -49,23 +60,34 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
         59,
       );
       await viewModel.setDateRange(pickedDateRange.start, endOfDay);
+      if (mounted) {
+        await _refreshTransactions();
+      }
     }
   }
 
   void _resetDateRange(TransactionViewModel viewModel) {
     final now = DateTime.now();
     final defaultStartDate = now.subtract(const Duration(days: 30));
-    viewModel.setDateRange(
-      defaultStartDate,
-      DateTime(now.year, now.month, now.day, 23, 59, 59),
-    );
+    viewModel
+        .setDateRange(
+          defaultStartDate,
+          DateTime(now.year, now.month, now.day, 23, 59, 59),
+        )
+        .then((_) {
+          if (mounted) {
+            _refreshTransactions();
+          }
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Transactions'),
+        title: Text(
+          widget.categoryId != null ? 'Category Transactions' : 'Transactions',
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.calendar_today),
@@ -80,10 +102,11 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
             onPressed: () =>
                 _resetDateRange(context.read<TransactionViewModel>()),
           ),
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: () => _showFilterDialog(context),
-          ),
+          if (widget.categoryId == null)
+            IconButton(
+              icon: const Icon(Icons.filter_list),
+              onPressed: () => _showFilterDialog(context),
+            ),
         ],
       ),
       body: Consumer<TransactionViewModel>(
@@ -100,7 +123,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                   Text(viewModel.error!),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: viewModel.loadTransactions,
+                    onPressed: _refreshTransactions,
                     child: const Text('Retry'),
                   ),
                 ],
@@ -114,7 +137,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
           }
 
           return RefreshIndicator(
-            onRefresh: viewModel.loadTransactions,
+            onRefresh: _refreshTransactions,
             child: ListView.builder(
               itemCount: transactions.length,
               itemBuilder: (context, index) {
