@@ -47,7 +47,7 @@ class SpendoraApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider(create: (_) => sl<LocalStorageService>()),
+        ChangeNotifierProvider(create: (_) => sl<LocalStorageService>()),
         ChangeNotifierProvider(create: (_) => sl<AuthProvider>()),
         ChangeNotifierProvider(create: (_) => sl<LoginViewModel>()),
         ChangeNotifierProvider(create: (_) => sl<RegisterViewModel>()),

@@ -80,7 +80,9 @@ class SettingsScreen extends StatelessWidget {
                         ),
                         title: const Text('Dark Mode'),
                         value: storage.isDarkMode,
-                        onChanged: (value) => storage.setDarkMode(value),
+                        onChanged: (value) async {
+                          await storage.setDarkMode(value);
+                        },
                       ),
                     ),
                     const Divider(),

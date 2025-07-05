@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LocalStorageService {
+class LocalStorageService extends ChangeNotifier {
   static const String _hasCompletedOnboardingKey = 'has_completed_onboarding';
   static const String _themeKey = 'theme_is_dark';
 
@@ -21,5 +22,6 @@ class LocalStorageService {
 
   Future<void> setDarkMode(bool isDark) async {
     await _prefs.setBool(_themeKey, isDark);
+    notifyListeners();
   }
 }
