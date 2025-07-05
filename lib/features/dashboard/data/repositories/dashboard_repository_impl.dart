@@ -56,9 +56,17 @@ class DashboardRepositoryImpl implements DashboardRepository {
           .orderBy('date', descending: true)
           .get();
 
-      final transactions = transactionsSnapshot.docs
-          .map((doc) => app.Transaction.fromJson({...doc.data(), 'id': doc.id}))
-          .toList();
+      final transactions = transactionsSnapshot.docs.map((doc) {
+        final data = doc.data();
+        return app.Transaction.fromJson({
+          ...data,
+          'id': doc.id,
+          'date': (data['date'] as Timestamp).toDate().toIso8601String(),
+          'createdAt': (data['createdAt'] as Timestamp)
+              .toDate()
+              .toIso8601String(),
+        });
+      }).toList();
 
       // Calculate summary data
       double totalIncome = 0;

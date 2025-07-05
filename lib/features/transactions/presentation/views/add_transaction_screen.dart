@@ -92,7 +92,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     try {
       await context.read<TransactionViewModel>().createTransaction(transaction);
       if (mounted) {
-        context.pop();
+        context.pop(true);
       }
     } catch (e) {
       if (mounted) {
@@ -110,174 +110,211 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Add Transaction')),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // Transaction Type
-            SegmentedButton<TransactionType>(
-              segments: const [
-                ButtonSegment(
-                  value: TransactionType.expense,
-                  label: Text('Expense'),
-                  icon: Icon(Icons.arrow_downward),
-                ),
-                ButtonSegment(
-                  value: TransactionType.income,
-                  label: Text('Income'),
-                  icon: Icon(Icons.arrow_upward),
-                ),
-              ],
-              selected: {_type},
-              onSelectionChanged: (Set<TransactionType> selected) {
-                setState(() {
-                  _type = selected.first;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Amount
-            TextFormField(
-              controller: _amountController,
-              decoration: const InputDecoration(
-                labelText: 'Amount',
-                prefixText: '\$',
-              ),
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter an amount';
-                }
-                if (double.tryParse(value) == null) {
-                  return 'Please enter a valid number';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Description
-            TextFormField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(labelText: 'Description'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a description';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Category
-            DropdownButtonFormField<String>(
-              value: _selectedCategoryId,
-              decoration: const InputDecoration(labelText: 'Category'),
-              items: [
-                // TODO: Get categories from repository
-                const DropdownMenuItem(
-                  value: 'food',
-                  child: Text('Food & Dining'),
-                ),
-                const DropdownMenuItem(
-                  value: 'transport',
-                  child: Text('Transportation'),
-                ),
-                const DropdownMenuItem(
-                  value: 'housing',
-                  child: Text('Housing & Rent'),
-                ),
-              ],
-              onChanged: (value) {
-                setState(() {
-                  _selectedCategoryId = value;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Date
-            ListTile(
-              title: const Text('Date'),
-              subtitle: Text(dateFormat.format(_selectedDate)),
-              trailing: const Icon(Icons.calendar_today),
-              onTap: () => _selectDate(context),
-            ),
-            const SizedBox(height: 16),
-
-            // Tags
-            Row(
+      body: Consumer<TransactionViewModel>(
+        builder: (context, viewModel, child) {
+          return Form(
+            key: _formKey,
+            child: Stack(
               children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _tagController,
-                    decoration: const InputDecoration(labelText: 'Add Tag'),
-                  ),
+                ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    // Transaction Type
+                    SegmentedButton<TransactionType>(
+                      segments: const [
+                        ButtonSegment(
+                          value: TransactionType.expense,
+                          label: Text('Expense'),
+                          icon: Icon(Icons.arrow_downward),
+                        ),
+                        ButtonSegment(
+                          value: TransactionType.income,
+                          label: Text('Income'),
+                          icon: Icon(Icons.arrow_upward),
+                        ),
+                      ],
+                      selected: {_type},
+                      onSelectionChanged: (Set<TransactionType> selected) {
+                        setState(() {
+                          _type = selected.first;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Amount
+                    TextFormField(
+                      controller: _amountController,
+                      decoration: const InputDecoration(
+                        labelText: 'Amount',
+                        prefixText: '\$',
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter an amount';
+                        }
+                        if (double.tryParse(value) == null) {
+                          return 'Please enter a valid number';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Description
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a description';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Category
+                    if (viewModel.isCategoriesLoading)
+                      const Center(child: CircularProgressIndicator())
+                    else if (viewModel.error != null)
+                      Text(
+                        'Error loading categories: ${viewModel.error}',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      )
+                    else
+                      DropdownButtonFormField<String>(
+                        value: _selectedCategoryId,
+                        decoration: const InputDecoration(
+                          labelText: 'Category',
+                        ),
+                        items: viewModel.categories.map((category) {
+                          return DropdownMenuItem(
+                            value: category.id,
+                            child: Row(
+                              children: [
+                                Text(category.icon),
+                                const SizedBox(width: 8),
+                                Text(category.name),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedCategoryId = value;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select a category';
+                          }
+                          return null;
+                        },
+                      ),
+                    const SizedBox(height: 16),
+
+                    // Date
+                    ListTile(
+                      title: const Text('Date'),
+                      subtitle: Text(dateFormat.format(_selectedDate)),
+                      trailing: const Icon(Icons.calendar_today),
+                      onTap: () => _selectDate(context),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Tags
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _tagController,
+                            decoration: const InputDecoration(
+                              labelText: 'Add Tag',
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: _addTag,
+                        ),
+                      ],
+                    ),
+                    if (_tags.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        children: _tags
+                            .map(
+                              (tag) => Chip(
+                                label: Text(tag),
+                                onDeleted: () => _removeTag(tag),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+
+                    // Recurring Transaction
+                    SwitchListTile(
+                      title: const Text('Recurring Transaction'),
+                      value: _isRecurring,
+                      onChanged: (value) {
+                        setState(() {
+                          _isRecurring = value;
+                          if (!value) {
+                            _recurringType = null;
+                          }
+                        });
+                      },
+                    ),
+                    if (_isRecurring) ...[
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<RecurringType>(
+                        value: _recurringType,
+                        decoration: const InputDecoration(
+                          labelText: 'Recurring Type',
+                        ),
+                        items: RecurringType.values
+                            .map(
+                              (type) => DropdownMenuItem(
+                                value: type,
+                                child: Text(
+                                  type.toString().split('.').last.toUpperCase(),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _recurringType = value;
+                          });
+                        },
+                        validator: (value) {
+                          if (_isRecurring && value == null) {
+                            return 'Please select a recurring type';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ],
                 ),
-                IconButton(icon: const Icon(Icons.add), onPressed: _addTag),
+                if (viewModel.isLoading)
+                  Container(
+                    color: Colors.black26,
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
               ],
             ),
-            if (_tags.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: _tags
-                    .map(
-                      (tag) => Chip(
-                        label: Text(tag),
-                        onDeleted: () => _removeTag(tag),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ],
-            const SizedBox(height: 16),
-
-            // Recurring Transaction
-            SwitchListTile(
-              title: const Text('Recurring Transaction'),
-              value: _isRecurring,
-              onChanged: (value) {
-                setState(() {
-                  _isRecurring = value;
-                  if (!value) {
-                    _recurringType = null;
-                  }
-                });
-              },
-            ),
-            if (_isRecurring) ...[
-              const SizedBox(height: 8),
-              DropdownButtonFormField<RecurringType>(
-                value: _recurringType,
-                decoration: const InputDecoration(labelText: 'Recurring Type'),
-                items: RecurringType.values
-                    .map(
-                      (type) => DropdownMenuItem(
-                        value: type,
-                        child: Text(
-                          type.toString().split('.').last.toUpperCase(),
-                        ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _recurringType = value;
-                  });
-                },
-                validator: (value) {
-                  if (_isRecurring && value == null) {
-                    return 'Please select a recurring type';
-                  }
-                  return null;
-                },
-              ),
-            ],
-          ],
-        ),
+          );
+        },
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(

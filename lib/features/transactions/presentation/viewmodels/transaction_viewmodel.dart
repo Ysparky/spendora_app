@@ -1,35 +1,51 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
+import 'package:spendora_app/features/transactions/domain/models/category.dart';
 import 'package:spendora_app/features/transactions/domain/repositories/transaction_repository.dart';
 
 class TransactionViewModel extends ChangeNotifier {
   final TransactionRepository _repository;
-
-  TransactionViewModel({required TransactionRepository repository})
-    : _repository = repository;
-
-  List<Transaction>? _transactions;
   bool _isLoading = false;
+  bool _isCategoriesLoading = false;
   String? _error;
+  List<Category> _categories = [];
+  List<Transaction>? _transactions;
   DateTime _startDate = DateTime.now().subtract(const Duration(days: 30));
   DateTime _endDate = DateTime.now();
 
-  List<Transaction>? get transactions => _transactions;
   bool get isLoading => _isLoading;
+  bool get isCategoriesLoading => _isCategoriesLoading;
   String? get error => _error;
+  List<Category> get categories => _categories;
+  List<Transaction>? get transactions => _transactions;
   DateTime get startDate => _startDate;
   DateTime get endDate => _endDate;
+
+  TransactionViewModel({required TransactionRepository repository})
+    : _repository = repository {
+    loadCategories();
+  }
+
+  Future<void> loadCategories() async {
+    try {
+      _isCategoriesLoading = true;
+      notifyListeners();
+
+      _categories = await _repository.getCategories();
+      _error = null;
+    } catch (e) {
+      _error = 'Failed to load categories: $e';
+    } finally {
+      _isCategoriesLoading = false;
+      notifyListeners();
+    }
+  }
 
   Future<void> loadTransactions() async {
     try {
       _isLoading = true;
-      _error = null;
       notifyListeners();
-
-      _transactions = await _repository.getTransactionsForPeriod(
-        startDate: _startDate,
-        endDate: _endDate,
-      );
+      _transactions = await _repository.getTransactions();
     } catch (e) {
       _error = 'Failed to load transactions';
       debugPrint('TransactionViewModel: Error loading transactions - $e');
@@ -48,14 +64,16 @@ class TransactionViewModel extends ChangeNotifier {
   Future<void> createTransaction(Transaction transaction) async {
     try {
       _isLoading = true;
-      _error = null;
       notifyListeners();
 
       await _repository.createTransaction(transaction);
-      await loadTransactions();
+      await loadTransactions(); // Refresh the list after creating
+      _error = null;
     } catch (e) {
-      _error = 'Failed to create transaction';
-      debugPrint('TransactionViewModel: Error creating transaction - $e');
+      _error = 'Failed to create transaction: $e';
+      rethrow;
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }

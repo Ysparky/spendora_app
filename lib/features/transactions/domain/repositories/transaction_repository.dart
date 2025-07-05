@@ -1,4 +1,5 @@
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
+import 'package:spendora_app/features/transactions/domain/models/category.dart';
 
 abstract class TransactionRepository {
   /// Fetches all transactions for the current user
@@ -30,4 +31,7 @@ abstract class TransactionRepository {
 
   /// Fetches recurring transactions
   Future<List<Transaction>> getRecurringTransactions();
+
+  /// Fetches categories
+  Future<List<Category>> getCategories();
 }

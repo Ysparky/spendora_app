@@ -22,6 +22,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  Future<void> _addTransaction(BuildContext context) async {
+    final result = await context.push('/transactions/add');
+    // Refresh dashboard if transaction was added
+    if (result == true && mounted) {
+      context.read<DashboardViewModel>().loadDashboardSummary();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,7 +89,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/transactions/add'),
+        onPressed: () => _addTransaction(context),
         child: const Icon(Icons.add),
       ),
     );
