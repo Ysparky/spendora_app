@@ -5,8 +5,11 @@ import 'package:spendora_app/di.dart';
 import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:spendora_app/features/auth/presentation/views/login_screen.dart';
 import 'package:spendora_app/features/auth/presentation/views/register_screen.dart';
+import 'package:spendora_app/features/dashboard/presentation/views/dashboard_screen.dart';
 import 'package:spendora_app/features/onboarding/presentation/views/onboarding_screen.dart';
 import 'package:spendora_app/features/settings/presentation/views/settings_screen.dart';
+import 'package:spendora_app/features/transactions/presentation/views/add_transaction_screen.dart';
+import 'package:spendora_app/features/transactions/presentation/views/transaction_list_screen.dart';
 
 class AppRouter {
   static const String login = '/login';
@@ -14,6 +17,9 @@ class AppRouter {
   static const String onboarding = '/onboarding';
   static const String settings = '/settings';
   static const String home = '/';
+  static const String transactions = '/transactions';
+  static const String addTransaction = '/transactions/add';
+  static const String dashboard = '/dashboard';
 
   static late final AuthProvider _authProvider;
   static late final GoRouter _router;
@@ -48,6 +54,21 @@ class AppRouter {
           builder: (context, state) => const SettingsScreen(),
         ),
         // Add more routes here for authenticated screens
+        GoRoute(
+          path: transactions,
+          name: 'transactions',
+          builder: (context, state) => const TransactionListScreen(),
+        ),
+        GoRoute(
+          path: addTransaction,
+          name: 'addTransaction',
+          builder: (context, state) => const AddTransactionScreen(),
+        ),
+        GoRoute(
+          path: dashboard,
+          name: 'dashboard',
+          builder: (context, state) => const DashboardScreen(),
+        ),
         GoRoute(
           path: home,
           name: 'home',
@@ -89,7 +110,7 @@ class AppRouter {
         return onboarding;
       }
       debugPrint('AppRouter: Redirecting to home');
-      return home;
+      return dashboard;
     }
 
     // If authenticated and hasn't completed onboarding, redirect to onboarding
@@ -101,7 +122,7 @@ class AppRouter {
     // If authenticated and completed onboarding but still on onboarding route
     if (isAuthenticated && hasCompletedOnboarding && isOnboardingRoute) {
       debugPrint('AppRouter: Redirecting to home');
-      return home;
+      return dashboard;
     }
 
     debugPrint('AppRouter: No redirect needed');

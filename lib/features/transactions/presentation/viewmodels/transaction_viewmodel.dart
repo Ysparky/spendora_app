@@ -1,0 +1,153 @@
+import 'package:flutter/foundation.dart';
+import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
+import 'package:spendora_app/features/transactions/domain/repositories/transaction_repository.dart';
+
+class TransactionViewModel extends ChangeNotifier {
+  final TransactionRepository _repository;
+
+  TransactionViewModel({required TransactionRepository repository})
+    : _repository = repository;
+
+  List<Transaction>? _transactions;
+  bool _isLoading = false;
+  String? _error;
+  DateTime _startDate = DateTime.now().subtract(const Duration(days: 30));
+  DateTime _endDate = DateTime.now();
+
+  List<Transaction>? get transactions => _transactions;
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+  DateTime get startDate => _startDate;
+  DateTime get endDate => _endDate;
+
+  Future<void> loadTransactions() async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      _transactions = await _repository.getTransactionsForPeriod(
+        startDate: _startDate,
+        endDate: _endDate,
+      );
+    } catch (e) {
+      _error = 'Failed to load transactions';
+      debugPrint('TransactionViewModel: Error loading transactions - $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> setDateRange(DateTime start, DateTime end) async {
+    _startDate = start;
+    _endDate = end;
+    await loadTransactions();
+  }
+
+  Future<void> createTransaction(Transaction transaction) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      await _repository.createTransaction(transaction);
+      await loadTransactions();
+    } catch (e) {
+      _error = 'Failed to create transaction';
+      debugPrint('TransactionViewModel: Error creating transaction - $e');
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateTransaction(Transaction transaction) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      await _repository.updateTransaction(transaction);
+      await loadTransactions();
+    } catch (e) {
+      _error = 'Failed to update transaction';
+      debugPrint('TransactionViewModel: Error updating transaction - $e');
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteTransaction(String id) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      await _repository.deleteTransaction(id);
+      await loadTransactions();
+    } catch (e) {
+      _error = 'Failed to delete transaction';
+      debugPrint('TransactionViewModel: Error deleting transaction - $e');
+      notifyListeners();
+    }
+  }
+
+  Future<Transaction?> getTransactionById(String id) async {
+    try {
+      return await _repository.getTransactionById(id);
+    } catch (e) {
+      _error = 'Failed to load transaction';
+      debugPrint('TransactionViewModel: Error loading transaction - $e');
+      notifyListeners();
+      return null;
+    }
+  }
+
+  Future<void> filterByCategory(String categoryId) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      _transactions = await _repository.getTransactionsByCategory(categoryId);
+    } catch (e) {
+      _error = 'Failed to filter transactions';
+      debugPrint('TransactionViewModel: Error filtering by category - $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> filterByTag(String tag) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      _transactions = await _repository.getTransactionsByTag(tag);
+    } catch (e) {
+      _error = 'Failed to filter transactions';
+      debugPrint('TransactionViewModel: Error filtering by tag - $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadRecurringTransactions() async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      _transactions = await _repository.getRecurringTransactions();
+    } catch (e) {
+      _error = 'Failed to load recurring transactions';
+      debugPrint(
+        'TransactionViewModel: Error loading recurring transactions - $e',
+      );
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+}
