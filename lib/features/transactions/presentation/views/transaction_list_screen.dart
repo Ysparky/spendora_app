@@ -39,8 +39,26 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
     );
 
     if (pickedDateRange != null) {
-      await viewModel.setDateRange(pickedDateRange.start, pickedDateRange.end);
+      // Set end date to end of day (23:59:59)
+      final endOfDay = DateTime(
+        pickedDateRange.end.year,
+        pickedDateRange.end.month,
+        pickedDateRange.end.day,
+        23,
+        59,
+        59,
+      );
+      await viewModel.setDateRange(pickedDateRange.start, endOfDay);
     }
+  }
+
+  void _resetDateRange(TransactionViewModel viewModel) {
+    final now = DateTime.now();
+    final defaultStartDate = now.subtract(const Duration(days: 30));
+    viewModel.setDateRange(
+      defaultStartDate,
+      DateTime(now.year, now.month, now.day, 23, 59, 59),
+    );
   }
 
   @override
@@ -55,6 +73,12 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
               context,
               context.read<TransactionViewModel>(),
             ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Reset to Last 30 Days',
+            onPressed: () =>
+                _resetDateRange(context.read<TransactionViewModel>()),
           ),
           IconButton(
             icon: const Icon(Icons.filter_list),

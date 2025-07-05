@@ -11,7 +11,14 @@ class TransactionViewModel extends ChangeNotifier {
   List<Category> _categories = [];
   List<Transaction>? _transactions;
   DateTime _startDate = DateTime.now().subtract(const Duration(days: 30));
-  DateTime _endDate = DateTime.now();
+  DateTime _endDate = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+    23,
+    59,
+    59,
+  );
 
   bool get isLoading => _isLoading;
   bool get isCategoriesLoading => _isCategoriesLoading;
@@ -45,7 +52,11 @@ class TransactionViewModel extends ChangeNotifier {
     try {
       _isLoading = true;
       notifyListeners();
-      _transactions = await _repository.getTransactions();
+      _transactions = await _repository.getTransactions(
+        startDate: _startDate,
+        endDate: _endDate,
+      );
+      _error = null;
     } catch (e) {
       _error = 'Failed to load transactions';
       debugPrint('TransactionViewModel: Error loading transactions - $e');
@@ -58,6 +69,7 @@ class TransactionViewModel extends ChangeNotifier {
   Future<void> setDateRange(DateTime start, DateTime end) async {
     _startDate = start;
     _endDate = end;
+    notifyListeners();
     await loadTransactions();
   }
 
@@ -125,7 +137,11 @@ class TransactionViewModel extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      _transactions = await _repository.getTransactionsByCategory(categoryId);
+      _transactions = await _repository.getTransactionsByCategory(
+        categoryId,
+        startDate: _startDate,
+        endDate: _endDate,
+      );
     } catch (e) {
       _error = 'Failed to filter transactions';
       debugPrint('TransactionViewModel: Error filtering by category - $e');
@@ -141,7 +157,11 @@ class TransactionViewModel extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      _transactions = await _repository.getTransactionsByTag(tag);
+      _transactions = await _repository.getTransactionsByTag(
+        tag,
+        startDate: _startDate,
+        endDate: _endDate,
+      );
     } catch (e) {
       _error = 'Failed to filter transactions';
       debugPrint('TransactionViewModel: Error filtering by tag - $e');
@@ -157,7 +177,10 @@ class TransactionViewModel extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      _transactions = await _repository.getRecurringTransactions();
+      _transactions = await _repository.getRecurringTransactions(
+        startDate: _startDate,
+        endDate: _endDate,
+      );
     } catch (e) {
       _error = 'Failed to load recurring transactions';
       debugPrint(

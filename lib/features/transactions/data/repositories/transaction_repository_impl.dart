@@ -24,13 +24,38 @@ class TransactionRepositoryImpl implements TransactionRepository {
         .collection('transactions');
   }
 
+  Query<Map<String, dynamic>> _applyDateFilter(
+    Query<Map<String, dynamic>> query,
+    DateTime? startDate,
+    DateTime? endDate,
+  ) {
+    if (startDate != null) {
+      query = query.where(
+        'date',
+        isGreaterThanOrEqualTo: Timestamp.fromDate(startDate),
+      );
+    }
+    if (endDate != null) {
+      query = query.where(
+        'date',
+        isLessThanOrEqualTo: Timestamp.fromDate(endDate),
+      );
+    }
+    return query.orderBy('date', descending: true);
+  }
+
   @override
-  Future<List<Transaction>> getTransactions() async {
+  Future<List<Transaction>> getTransactions({
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     try {
       final user = _auth.currentUser;
       if (user == null) throw Exception('No user signed in');
 
-      final snapshot = await _getTransactionsCollection().get();
+      Query<Map<String, dynamic>> query = _getTransactionsCollection();
+      query = _applyDateFilter(query, startDate, endDate);
+      final snapshot = await query.get();
 
       return snapshot.docs.map((doc) {
         final data = doc.data();
@@ -54,33 +79,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
     required DateTime startDate,
     required DateTime endDate,
   }) async {
-    try {
-      final user = _auth.currentUser;
-      if (user == null) throw Exception('No user signed in');
-
-      final snapshot = await _getTransactionsCollection()
-          .where('date', isGreaterThanOrEqualTo: startDate)
-          .where('date', isLessThanOrEqualTo: endDate)
-          .orderBy('date', descending: true)
-          .get();
-
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return Transaction.fromJson({
-          ...data,
-          'id': doc.id,
-          'date': (data['date'] as Timestamp).toDate().toIso8601String(),
-          'createdAt': (data['createdAt'] as Timestamp)
-              .toDate()
-              .toIso8601String(),
-        });
-      }).toList();
-    } catch (e) {
-      debugPrint(
-        'TransactionRepository: Error getting transactions for period - $e',
-      );
-      rethrow;
-    }
+    return getTransactions(startDate: startDate, endDate: endDate);
   }
 
   @override
@@ -180,12 +179,18 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<List<Transaction>> getTransactionsByCategory(String categoryId) async {
+  Future<List<Transaction>> getTransactionsByCategory(
+    String categoryId, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     try {
-      final snapshot = await _getTransactionsCollection()
-          .where('categoryId', isEqualTo: categoryId)
-          .orderBy('date', descending: true)
-          .get();
+      var query = _getTransactionsCollection().where(
+        'categoryId',
+        isEqualTo: categoryId,
+      );
+      query = _applyDateFilter(query, startDate, endDate);
+      final snapshot = await query.get();
 
       return snapshot.docs.map((doc) {
         final data = doc.data();
@@ -207,12 +212,18 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<List<Transaction>> getTransactionsByTag(String tag) async {
+  Future<List<Transaction>> getTransactionsByTag(
+    String tag, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     try {
-      final snapshot = await _getTransactionsCollection()
-          .where('tags', arrayContains: tag)
-          .orderBy('date', descending: true)
-          .get();
+      var query = _getTransactionsCollection().where(
+        'tags',
+        arrayContains: tag,
+      );
+      query = _applyDateFilter(query, startDate, endDate);
+      final snapshot = await query.get();
 
       return snapshot.docs.map((doc) {
         final data = doc.data();
@@ -234,12 +245,17 @@ class TransactionRepositoryImpl implements TransactionRepository {
   }
 
   @override
-  Future<List<Transaction>> getRecurringTransactions() async {
+  Future<List<Transaction>> getRecurringTransactions({
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     try {
-      final snapshot = await _getTransactionsCollection()
-          .where('isRecurring', isEqualTo: true)
-          .orderBy('date', descending: true)
-          .get();
+      var query = _getTransactionsCollection().where(
+        'isRecurring',
+        isEqualTo: true,
+      );
+      query = _applyDateFilter(query, startDate, endDate);
+      final snapshot = await query.get();
 
       return snapshot.docs.map((doc) {
         final data = doc.data();

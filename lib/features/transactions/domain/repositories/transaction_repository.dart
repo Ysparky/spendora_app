@@ -3,7 +3,10 @@ import 'package:spendora_app/features/transactions/domain/models/category.dart';
 
 abstract class TransactionRepository {
   /// Fetches all transactions for the current user
-  Future<List<Transaction>> getTransactions();
+  Future<List<Transaction>> getTransactions({
+    DateTime? startDate,
+    DateTime? endDate,
+  });
 
   /// Fetches transactions for a specific time period
   Future<List<Transaction>> getTransactionsForPeriod({
@@ -24,13 +27,24 @@ abstract class TransactionRepository {
   Future<Transaction> getTransactionById(String id);
 
   /// Fetches transactions by category
-  Future<List<Transaction>> getTransactionsByCategory(String categoryId);
+  Future<List<Transaction>> getTransactionsByCategory(
+    String categoryId, {
+    DateTime? startDate,
+    DateTime? endDate,
+  });
 
   /// Fetches transactions by tag
-  Future<List<Transaction>> getTransactionsByTag(String tag);
+  Future<List<Transaction>> getTransactionsByTag(
+    String tag, {
+    DateTime? startDate,
+    DateTime? endDate,
+  });
 
   /// Fetches recurring transactions
-  Future<List<Transaction>> getRecurringTransactions();
+  Future<List<Transaction>> getRecurringTransactions({
+    DateTime? startDate,
+    DateTime? endDate,
+  });
 
   /// Fetches categories
   Future<List<Category>> getCategories();
