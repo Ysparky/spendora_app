@@ -358,6 +358,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get delete;
+
+  /// Title shown on the first onboarding page
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Spendora'**
+  String get onboardingWelcomeTitle;
+
+  /// Description shown on the first onboarding page
+  ///
+  /// In en, this message translates to:
+  /// **'Take control of your finances with smart expense tracking and budgeting'**
+  String get onboardingWelcomeDescription;
+
+  /// Title shown on the currency selection page
+  ///
+  /// In en, this message translates to:
+  /// **'Select Your Currency'**
+  String get onboardingCurrencyTitle;
+
+  /// Description shown on the currency selection page
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your preferred currency for transactions'**
+  String get onboardingCurrencyDescription;
+
+  /// Title shown on the categories preview page
+  ///
+  /// In en, this message translates to:
+  /// **'Default Categories'**
+  String get onboardingCategoriesTitle;
+
+  /// Description shown on the categories preview page
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ve prepared some categories to get you started'**
+  String get onboardingCategoriesDescription;
+
+  /// Text for the next button in onboarding
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get onboardingNext;
+
+  /// Text for the final button in onboarding
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get onboardingGetStarted;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

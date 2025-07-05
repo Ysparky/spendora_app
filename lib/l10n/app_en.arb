@@ -181,5 +181,38 @@
     "delete": "Delete",
     "@delete": {
         "description": "Label for delete button"
+    },
+
+    "onboardingWelcomeTitle": "Welcome to Spendora",
+    "@onboardingWelcomeTitle": {
+        "description": "Title shown on the first onboarding page"
+    },
+    "onboardingWelcomeDescription": "Take control of your finances with smart expense tracking and budgeting",
+    "@onboardingWelcomeDescription": {
+        "description": "Description shown on the first onboarding page"
+    },
+    "onboardingCurrencyTitle": "Select Your Currency",
+    "@onboardingCurrencyTitle": {
+        "description": "Title shown on the currency selection page"
+    },
+    "onboardingCurrencyDescription": "Choose your preferred currency for transactions",
+    "@onboardingCurrencyDescription": {
+        "description": "Description shown on the currency selection page"
+    },
+    "onboardingCategoriesTitle": "Default Categories",
+    "@onboardingCategoriesTitle": {
+        "description": "Title shown on the categories preview page"
+    },
+    "onboardingCategoriesDescription": "We've prepared some categories to get you started",
+    "@onboardingCategoriesDescription": {
+        "description": "Description shown on the categories preview page"
+    },
+    "onboardingNext": "Next",
+    "@onboardingNext": {
+        "description": "Text for the next button in onboarding"
+    },
+    "onboardingGetStarted": "Get Started",
+    "@onboardingGetStarted": {
+        "description": "Text for the final button in onboarding"
     }
 } 

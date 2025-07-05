@@ -48,5 +48,14 @@
     "success": "Éxito",
     "cancel": "Cancelar",
     "save": "Guardar",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+
+    "onboardingWelcomeTitle": "Bienvenido a Spendora",
+    "onboardingWelcomeDescription": "Toma el control de tus finanzas con un seguimiento inteligente de gastos y presupuestos",
+    "onboardingCurrencyTitle": "Selecciona tu moneda",
+    "onboardingCurrencyDescription": "Elige tu moneda preferida para las transacciones",
+    "onboardingCategoriesTitle": "Categorías predeterminadas",
+    "onboardingCategoriesDescription": "Hemos preparado algunas categorías para empezar",
+    "onboardingNext": "Siguiente",
+    "onboardingGetStarted": "Comenzar"
 } 

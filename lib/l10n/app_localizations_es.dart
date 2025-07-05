@@ -139,4 +139,28 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get delete => 'Eliminar';
+
+  @override
+  String get onboardingWelcomeTitle => 'Bienvenido a Spendora';
+
+  @override
+  String get onboardingWelcomeDescription => 'Toma el control de tus finanzas con un seguimiento inteligente de gastos y presupuestos';
+
+  @override
+  String get onboardingCurrencyTitle => 'Selecciona tu moneda';
+
+  @override
+  String get onboardingCurrencyDescription => 'Elige tu moneda preferida para las transacciones';
+
+  @override
+  String get onboardingCategoriesTitle => 'Categorías predeterminadas';
+
+  @override
+  String get onboardingCategoriesDescription => 'Hemos preparado algunas categorías para empezar';
+
+  @override
+  String get onboardingNext => 'Siguiente';
+
+  @override
+  String get onboardingGetStarted => 'Comenzar';
 }

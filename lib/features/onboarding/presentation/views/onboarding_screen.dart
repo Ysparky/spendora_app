@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:spendora_app/core/router/router.dart';
 import 'package:spendora_app/features/onboarding/presentation/viewmodels/onboarding_viewmodel.dart';
+import 'package:spendora_app/l10n/app_localizations.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -48,6 +49,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -88,7 +91,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   // Next/Complete button
                   FilledButton(
                     onPressed: _nextPage,
-                    child: Text(_currentPage == 2 ? 'Get Started' : 'Next'),
+                    child: Text(
+                      _currentPage == 2
+                          ? l10n.onboardingGetStarted
+                          : l10n.onboardingNext,
+                    ),
                   ),
                 ],
               ),
@@ -105,6 +112,8 @@ class _WelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
@@ -113,13 +122,13 @@ class _WelcomePage extends StatelessWidget {
           const Icon(Icons.account_balance_wallet_outlined, size: 64),
           const SizedBox(height: 24),
           Text(
-            'Welcome to Spendora',
+            l10n.onboardingWelcomeTitle,
             style: Theme.of(context).textTheme.headlineMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           Text(
-            'Take control of your finances with smart expense tracking and budgeting',
+            l10n.onboardingWelcomeDescription,
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
@@ -134,6 +143,7 @@ class _CurrencySelectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final viewModel = context.watch<OnboardingViewModel>();
     final currencies = viewModel.supportedCurrencies;
 
@@ -142,12 +152,12 @@ class _CurrencySelectionPage extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'Select Your Currency',
+            l10n.onboardingCurrencyTitle,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
           Text(
-            'Choose your preferred currency for transactions',
+            l10n.onboardingCurrencyDescription,
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
@@ -180,6 +190,7 @@ class _CategoryPreviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final viewModel = context.watch<OnboardingViewModel>();
     final categories = viewModel.defaultCategories;
 
@@ -188,12 +199,12 @@ class _CategoryPreviewPage extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'Default Categories',
+            l10n.onboardingCategoriesTitle,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 8),
           Text(
-            'We\'ve prepared some categories to get you started',
+            l10n.onboardingCategoriesDescription,
             style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
