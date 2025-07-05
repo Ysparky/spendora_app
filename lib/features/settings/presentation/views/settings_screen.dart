@@ -3,8 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:spendora_app/core/router/router.dart';
 import 'package:spendora_app/core/services/local_storage_service.dart';
+import 'package:spendora_app/core/providers/locale_provider.dart';
 import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:spendora_app/features/settings/presentation/viewmodels/settings_viewmodel.dart';
+import 'package:spendora_app/l10n/app_localizations.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -83,12 +85,18 @@ class SettingsScreen extends StatelessWidget {
                     ),
                     const Divider(),
                     // Language
-                    ListTile(
-                      leading: const Icon(Icons.language),
-                      title: const Text('Language'),
-                      subtitle: Text(preferences.language.toUpperCase()),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {}, // TODO: Implement language selection
+                    Consumer<LocaleProvider>(
+                      builder: (context, localeProvider, _) => ListTile(
+                        leading: const Icon(Icons.language),
+                        title: Text(AppLocalizations.of(context)!.language),
+                        subtitle: Text(
+                          localeProvider.getLanguageName(
+                            localeProvider.locale?.languageCode ?? 'en',
+                          ),
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _showLanguagePicker(context),
+                      ),
                     ),
                     const Divider(),
                     // Currency
@@ -331,6 +339,33 @@ class SettingsScreen extends StatelessWidget {
         }
       }
     }
+  }
+
+  void _showLanguagePicker(BuildContext context) {
+    final localeProvider = context.read<LocaleProvider>();
+    final currentLanguageCode = localeProvider.locale?.languageCode ?? 'en';
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => ListView.builder(
+        itemCount: localeProvider.supportedLanguages.length,
+        itemBuilder: (context, index) {
+          final language = localeProvider.supportedLanguages[index];
+          final isSelected = language['code'] == currentLanguageCode;
+
+          return ListTile(
+            title: Text(language['name']!),
+            trailing: isSelected
+                ? const Icon(Icons.check, color: Colors.green)
+                : null,
+            onTap: () {
+              localeProvider.setLocale(Locale(language['code']!));
+              context.pop();
+            },
+          );
+        },
+      ),
+    );
   }
 }
 

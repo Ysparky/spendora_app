@@ -2,10 +2,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:spendora_app/core/router/router.dart';
 import 'package:spendora_app/core/services/local_storage_service.dart';
 import 'package:spendora_app/core/theme/app_theme.dart';
+import 'package:spendora_app/core/providers/locale_provider.dart';
 import 'package:spendora_app/di.dart';
 import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:spendora_app/features/auth/presentation/viewmodels/login_viewmodel.dart';
@@ -17,6 +19,7 @@ import 'package:spendora_app/features/settings/presentation/viewmodels/settings_
 import 'package:spendora_app/firebase_options.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:spendora_app/core/services/currency_conversion_service.dart';
+import 'package:spendora_app/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,16 +63,28 @@ class SpendoraApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => sl<TransactionViewModel>()),
         ChangeNotifierProvider(create: (_) => sl<DashboardViewModel>()),
         ChangeNotifierProvider(create: (_) => sl<CurrencyConversionService>()),
+        ChangeNotifierProvider(create: (_) => sl<LocaleProvider>()),
       ],
-      child: Consumer<LocalStorageService>(
-        builder: (context, storage, child) => MaterialApp.router(
-          title: 'Spendora',
-          theme: AppTheme.light(context),
-          darkTheme: AppTheme.dark(context),
-          themeMode: storage.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-          routerConfig: AppRouter.router,
-          debugShowCheckedModeBanner: false,
-        ),
+      child: Consumer2<LocalStorageService, LocaleProvider>(
+        builder: (context, storage, localeProvider, child) =>
+            MaterialApp.router(
+              title: 'Spendora',
+              theme: AppTheme.light(context),
+              darkTheme: AppTheme.dark(context),
+              themeMode: storage.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+              routerConfig: AppRouter.router,
+              debugShowCheckedModeBanner: false,
+
+              // Localization support
+              locale: localeProvider.locale,
+              supportedLocales: LocaleProvider.supportedLocales,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+            ),
       ),
     );
   }

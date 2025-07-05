@@ -1,0 +1,37 @@
+{
+    "@@locale": "es",
+    
+    "appName": "Spendora",
+    "loginTitle": "Bienvenido de nuevo",
+    "loginButton": "Iniciar sesión",
+    "registerButton": "Registrarse",
+    "emailHint": "Correo electrónico",
+    "passwordHint": "Contraseña",
+
+    "homeTab": "Inicio",
+    "transactionsTab": "Transacciones",
+    "budgetsTab": "Presupuestos",
+    "settingsTab": "Ajustes",
+
+    "addTransaction": "Añadir transacción",
+    "amount": "Cantidad",
+    "description": "Descripción",
+    "category": "Categoría",
+    "date": "Fecha",
+    "type": "Tipo",
+    "income": "Ingreso",
+    "expense": "Gasto",
+
+    "settings": "Ajustes",
+    "language": "Idioma",
+    "currency": "Moneda",
+    "theme": "Tema",
+    "notifications": "Notificaciones",
+    "logout": "Cerrar sesión",
+
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar"
+} 

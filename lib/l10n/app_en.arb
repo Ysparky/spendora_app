@@ -1,0 +1,125 @@
+{
+    "@@locale": "en",
+    
+    "appName": "Spendora",
+    "@appName": {
+        "description": "The name of the application"
+    },
+
+    "loginTitle": "Welcome Back",
+    "@loginTitle": {
+        "description": "Title shown on the login screen"
+    },
+    "loginButton": "Login",
+    "@loginButton": {
+        "description": "Text for the login button"
+    },
+    "registerButton": "Register",
+    "@registerButton": {
+        "description": "Text for the register button"
+    },
+    "emailHint": "Email",
+    "@emailHint": {
+        "description": "Hint text for email input field"
+    },
+    "passwordHint": "Password",
+    "@passwordHint": {
+        "description": "Hint text for password input field"
+    },
+
+    "homeTab": "Home",
+    "@homeTab": {
+        "description": "Label for home tab"
+    },
+    "transactionsTab": "Transactions",
+    "@transactionsTab": {
+        "description": "Label for transactions tab"
+    },
+    "budgetsTab": "Budgets",
+    "@budgetsTab": {
+        "description": "Label for budgets tab"
+    },
+    "settingsTab": "Settings",
+    "@settingsTab": {
+        "description": "Label for settings tab"
+    },
+
+    "addTransaction": "Add Transaction",
+    "@addTransaction": {
+        "description": "Title for add transaction screen"
+    },
+    "amount": "Amount",
+    "@amount": {
+        "description": "Label for amount input"
+    },
+    "description": "Description",
+    "@description": {
+        "description": "Label for description input"
+    },
+    "category": "Category",
+    "@category": {
+        "description": "Label for category selection"
+    },
+    "date": "Date",
+    "@date": {
+        "description": "Label for date selection"
+    },
+    "type": "Type",
+    "@type": {
+        "description": "Label for transaction type selection"
+    },
+    "income": "Income",
+    "@income": {
+        "description": "Label for income type"
+    },
+    "expense": "Expense",
+    "@expense": {
+        "description": "Label for expense type"
+    },
+
+    "settings": "Settings",
+    "@settings": {
+        "description": "Title for settings screen"
+    },
+    "language": "Language",
+    "@language": {
+        "description": "Label for language selection"
+    },
+    "currency": "Currency",
+    "@currency": {
+        "description": "Label for currency selection"
+    },
+    "theme": "Theme",
+    "@theme": {
+        "description": "Label for theme selection"
+    },
+    "notifications": "Notifications",
+    "@notifications": {
+        "description": "Label for notifications toggle"
+    },
+    "logout": "Logout",
+    "@logout": {
+        "description": "Label for logout button"
+    },
+
+    "error": "Error",
+    "@error": {
+        "description": "Generic error message title"
+    },
+    "success": "Success",
+    "@success": {
+        "description": "Generic success message title"
+    },
+    "cancel": "Cancel",
+    "@cancel": {
+        "description": "Label for cancel button"
+    },
+    "save": "Save",
+    "@save": {
+        "description": "Label for save button"
+    },
+    "delete": "Delete",
+    "@delete": {
+        "description": "Label for delete button"
+    }
+} 
