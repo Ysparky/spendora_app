@@ -36,6 +36,7 @@ class SettingsViewModel extends ChangeNotifier {
       );
 
       await _repository.updateUserPreferences(newPreferences);
+      await _refreshUserData();
     } catch (e) {
       _error = e.toString();
       debugPrint('SettingsViewModel: Error updating notifications - $e');
@@ -60,12 +61,22 @@ class SettingsViewModel extends ChangeNotifier {
       );
 
       await _repository.updateUserPreferences(newPreferences);
+      await _refreshUserData();
     } catch (e) {
       _error = e.toString();
       debugPrint('SettingsViewModel: Error updating currency - $e');
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> _refreshUserData() async {
+    try {
+      await _authProvider.refreshUserData();
+    } catch (e) {
+      debugPrint('SettingsViewModel: Error refreshing user data - $e');
+      // Don't throw, as the preference update was successful
     }
   }
 

@@ -15,8 +15,9 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Settings')),
       body: Consumer<SettingsViewModel>(
         builder: (context, viewModel, child) {
-          if (viewModel.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+          final preferences = viewModel.preferences;
+          if (preferences == null) {
+            return const Center(child: Text('No preferences found'));
           }
 
           if (viewModel.error != null) {
@@ -36,11 +37,6 @@ class SettingsScreen extends StatelessWidget {
                 ],
               ),
             );
-          }
-
-          final preferences = viewModel.preferences;
-          if (preferences == null) {
-            return const Center(child: Text('No preferences found'));
           }
 
           return ListView(
@@ -98,10 +94,18 @@ class SettingsScreen extends StatelessWidget {
                     // Currency
                     ListTile(
                       leading: const Icon(Icons.currency_exchange),
-                      title: const Text('Currency'),
+                      title: const Text('Main Currency'),
                       subtitle: Text(preferences.currency),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () => _showCurrencyPicker(context),
+                      trailing: viewModel.isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.chevron_right),
+                      onTap: viewModel.isLoading
+                          ? null
+                          : () => _showCurrencyPicker(context),
                     ),
                   ],
                 ),

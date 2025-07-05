@@ -99,7 +99,9 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$');
+    final currencyFormat = NumberFormat.currency(
+      symbol: _transaction?.currency ?? 'USD',
+    );
     final dateFormat = DateFormat('MMM d, y');
 
     return Scaffold(

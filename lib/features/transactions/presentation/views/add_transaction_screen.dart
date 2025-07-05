@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:spendora_app/features/settings/presentation/viewmodels/settings_viewmodel.dart';
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
 
@@ -24,6 +26,15 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   DateTime _selectedDate = DateTime.now();
   bool _isRecurring = false;
   RecurringType? _recurringType;
+  late String _selectedCurrency;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize with user's preferred currency
+    _selectedCurrency =
+        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+  }
 
   @override
   void dispose() {
@@ -88,6 +99,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       isRecurring: _isRecurring,
       recurringType: _isRecurring ? _recurringType : null,
       createdAt: DateTime.now(),
+      currency: _selectedCurrency,
     );
 
     try {
@@ -106,8 +118,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final theme = Theme.of(context);
     final dateFormat = DateFormat('MMM d, y');
+    final currencyFormat = NumberFormat.currency(symbol: _selectedCurrency);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Add Transaction')),
@@ -147,20 +159,63 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Amount
-                    TextFormField(
-                      controller: _amountController,
-                      decoration: const InputDecoration(labelText: 'Amount'),
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter an amount';
-                        }
-                        if (double.tryParse(value) == null) {
-                          return 'Please enter a valid number';
-                        }
-                        return null;
-                      },
+                    // Amount and Currency
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 7,
+                          child: TextFormField(
+                            controller: _amountController,
+                            decoration: InputDecoration(
+                              labelText: 'Amount',
+                              prefixText: NumberFormat.currency(
+                                symbol: _selectedCurrency,
+                                decimalDigits: 0,
+                              ).currencySymbol,
+                            ),
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter an amount';
+                              }
+                              if (double.tryParse(value) == null) {
+                                return 'Please enter a valid number';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          flex: 3,
+                          child: Consumer<SettingsViewModel>(
+                            builder: (context, settingsViewModel, _) {
+                              return DropdownButtonFormField<String>(
+                                value: _selectedCurrency,
+                                decoration: const InputDecoration(
+                                  labelText: 'Currency',
+                                ),
+                                items: settingsViewModel.supportedCurrencies
+                                    .map(
+                                      (currency) => DropdownMenuItem(
+                                        value: currency,
+                                        child: Text(currency),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      _selectedCurrency = value;
+                                    });
+                                  }
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
 
