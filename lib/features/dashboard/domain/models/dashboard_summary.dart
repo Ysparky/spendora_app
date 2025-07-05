@@ -6,16 +6,26 @@ part 'dashboard_summary.g.dart';
 @freezed
 abstract class DashboardSummary with _$DashboardSummary {
   const factory DashboardSummary({
-    required double totalBalance,
-    required double monthlyIncome,
-    required double monthlyExpenses,
-    required double monthlySavings,
+    required Map<String, CurrencyTotal> currencyTotals,
     required List<CategorySummary> topCategories,
     required List<TransactionSummary> recentTransactions,
   }) = _DashboardSummary;
 
   factory DashboardSummary.fromJson(Map<String, dynamic> json) =>
       _$DashboardSummaryFromJson(json);
+}
+
+@freezed
+abstract class CurrencyTotal with _$CurrencyTotal {
+  const factory CurrencyTotal({
+    required double totalBalance,
+    required double monthlyIncome,
+    required double monthlyExpenses,
+    required double monthlySavings,
+  }) = _CurrencyTotal;
+
+  factory CurrencyTotal.fromJson(Map<String, dynamic> json) =>
+      _$CurrencyTotalFromJson(json);
 }
 
 @freezed
@@ -26,6 +36,7 @@ abstract class CategorySummary with _$CategorySummary {
     required String icon,
     required double amount,
     required double percentage,
+    required String currency,
   }) = _CategorySummary;
 
   factory CategorySummary.fromJson(Map<String, dynamic> json) =>
@@ -43,6 +54,7 @@ abstract class TransactionSummary with _$TransactionSummary {
     required String categoryName,
     required String categoryIcon,
     required String type,
+    required String currency,
   }) = _TransactionSummary;
 
   factory TransactionSummary.fromJson(Map<String, dynamic> json) =>

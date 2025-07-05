@@ -84,7 +84,25 @@ class TransactionViewModel extends ChangeNotifier {
   }
 
   double getCategoryAmount(String categoryId) {
-    return _categoryTotals[categoryId] ?? 0;
+    if (_transactions == null) return 0.0;
+    return _transactions!
+        .where((t) => t.categoryId == categoryId)
+        .fold(0.0, (sum, t) => sum + t.amount);
+  }
+
+  Map<String, double> getCategoryAmountsByCurrency(String categoryId) {
+    final amountsByCurrency = <String, double>{};
+
+    if (_transactions == null) return amountsByCurrency;
+
+    for (final transaction in _transactions!.where(
+      (t) => t.categoryId == categoryId,
+    )) {
+      amountsByCurrency[transaction.currency] =
+          (amountsByCurrency[transaction.currency] ?? 0.0) + transaction.amount;
+    }
+
+    return amountsByCurrency;
   }
 
   Future<void> loadTransactions() async {

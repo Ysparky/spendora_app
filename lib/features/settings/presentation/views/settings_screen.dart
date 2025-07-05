@@ -107,6 +107,22 @@ class SettingsScreen extends StatelessWidget {
                           ? null
                           : () => _showCurrencyPicker(context),
                     ),
+                    const Divider(),
+                    // Currency Display Mode
+                    Consumer<LocalStorageService>(
+                      builder: (context, storage, _) => ListTile(
+                        leading: const Icon(Icons.view_agenda),
+                        title: const Text('Currency Display'),
+                        subtitle: Text(
+                          storage.currencyDisplayMode ==
+                                  CurrencyDisplayMode.unified
+                              ? 'Convert all to ${preferences.currency}'
+                              : 'Group by currency',
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _showCurrencyDisplayModePicker(context),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -209,6 +225,43 @@ class SettingsScreen extends StatelessWidget {
             },
           );
         },
+      ),
+    );
+  }
+
+  void _showCurrencyDisplayModePicker(BuildContext context) {
+    final storage = context.read<LocalStorageService>();
+    final currentMode = storage.currencyDisplayMode;
+    final userCurrency =
+        context.read<SettingsViewModel>().preferences?.currency ?? 'USD';
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => ListView(
+        children: [
+          ListTile(
+            title: const Text('Convert all to main currency'),
+            subtitle: Text('All amounts will be shown in $userCurrency'),
+            trailing: currentMode == CurrencyDisplayMode.unified
+                ? const Icon(Icons.check, color: Colors.green)
+                : null,
+            onTap: () {
+              storage.setCurrencyDisplayMode(CurrencyDisplayMode.unified);
+              context.pop();
+            },
+          ),
+          ListTile(
+            title: const Text('Group by currency'),
+            subtitle: const Text('Show separate totals for each currency'),
+            trailing: currentMode == CurrencyDisplayMode.grouped
+                ? const Icon(Icons.check, color: Colors.green)
+                : null,
+            onTap: () {
+              storage.setCurrencyDisplayMode(CurrencyDisplayMode.grouped);
+              context.pop();
+            },
+          ),
+        ],
       ),
     );
   }

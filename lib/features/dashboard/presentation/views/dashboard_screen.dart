@@ -3,6 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:spendora_app/core/theme/app_theme.dart';
+import 'package:spendora_app/core/utils/currency_utils.dart';
+import 'package:spendora_app/core/services/local_storage_service.dart';
+import 'package:spendora_app/core/services/currency_conversion_service.dart';
+import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:spendora_app/features/dashboard/domain/models/dashboard_summary.dart';
 import 'package:spendora_app/features/dashboard/presentation/viewmodels/dashboard_viewmodel.dart';
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
@@ -79,7 +83,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(height: 16),
                 _MonthlyOverviewCard(summary: summary),
                 const SizedBox(height: 16),
-                _TopCategoriesCard(categories: summary.topCategories),
+                _TopCategoriesCard(summary: summary),
                 const SizedBox(height: 16),
                 _RecentTransactionsCard(
                   transactions: summary.recentTransactions,
@@ -97,130 +101,557 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 }
 
-class _BalanceCard extends StatelessWidget {
+class _BalanceCard extends StatefulWidget {
   final DashboardSummary summary;
 
   const _BalanceCard({required this.summary});
 
   @override
+  State<_BalanceCard> createState() => _BalanceCardState();
+}
+
+class _BalanceCardState extends State<_BalanceCard> {
+  bool _isExpanded = false;
+  bool _isLoading = false;
+  String? _conversionDetails;
+  double? _totalConverted;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final storage = context.read<LocalStorageService>();
+    final isUnifiedView =
+        storage.currencyDisplayMode == CurrencyDisplayMode.unified;
+    final userCurrency =
+        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+
+    if (isUnifiedView && _conversionDetails == null && !_isLoading) {
+      _calculateConvertedTotal(userCurrency);
+    }
+  }
+
+  Future<void> _calculateConvertedTotal(String targetCurrency) async {
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final amounts = widget.summary.currencyTotals.map(
+        (key, value) => MapEntry(key, value.totalBalance),
+      );
+
+      final conversionService = context.read<CurrencyConversionService>();
+      final (total, details) = await conversionService
+          .getAmountWithConversionDetails(
+            amounts: amounts,
+            targetCurrency: targetCurrency,
+          );
+
+      if (mounted) {
+        setState(() {
+          _totalConverted = total;
+          _conversionDetails = details;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        // Schedule the SnackBar for the next frame
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error calculating conversion: $e')),
+            );
+          }
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$');
+    final storage = context.watch<LocalStorageService>();
+    final isUnifiedView =
+        storage.currencyDisplayMode == CurrencyDisplayMode.unified;
+    final userCurrency =
+        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Total Balance', style: theme.textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Text(
-              currencyFormat.format(summary.totalBalance),
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: summary.totalBalance >= 0
-                    ? AppTheme.light(context).colorScheme.primary
-                    : AppTheme.light(context).colorScheme.error,
+      child: InkWell(
+        onTap: (isUnifiedView && widget.summary.currencyTotals.length > 1)
+            ? () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              }
+            : null,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text('Total Balance', style: theme.textTheme.titleMedium),
+                  const Spacer(),
+                  if (isUnifiedView && widget.summary.currencyTotals.length > 1)
+                    AnimatedRotation(
+                      duration: const Duration(milliseconds: 200),
+                      turns: _isExpanded ? 0.5 : 0,
+                      child: const Icon(Icons.keyboard_arrow_down),
+                    ),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              if (isUnifiedView) ...[
+                if (_isLoading)
+                  const Center(child: CircularProgressIndicator())
+                else if (_totalConverted != null) ...[
+                  Text(
+                    NumberFormat.currency(
+                      symbol: CurrencyUtils.getCurrencySymbol(userCurrency),
+                    ).format(_totalConverted),
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: _totalConverted! >= 0
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.error,
+                    ),
+                  ),
+                  if (_conversionDetails != null && _isExpanded)
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 200),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          _conversionDetails!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ] else ...[
+                ...widget.summary.currencyTotals.entries.map((entry) {
+                  final currency = entry.key;
+                  final totals = entry.value;
+                  final currencyFormat = NumberFormat.currency(
+                    symbol: CurrencyUtils.getCurrencySymbol(currency),
+                  );
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      children: [
+                        Text(currency, style: theme.textTheme.titleSmall),
+                        const SizedBox(width: 16),
+                        Text(
+                          currencyFormat.format(totals.totalBalance),
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: totals.totalBalance >= 0
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.error,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _MonthlyOverviewCard extends StatelessWidget {
+class _MonthlyOverviewCard extends StatefulWidget {
   final DashboardSummary summary;
 
   const _MonthlyOverviewCard({required this.summary});
 
   @override
+  State<_MonthlyOverviewCard> createState() => _MonthlyOverviewCardState();
+}
+
+class _MonthlyOverviewCardState extends State<_MonthlyOverviewCard> {
+  bool _isExpanded = false;
+  bool _isLoading = false;
+  Map<String, (double, String)?> _convertedAmounts = {};
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final storage = context.read<LocalStorageService>();
+    final isUnifiedView =
+        storage.currencyDisplayMode == CurrencyDisplayMode.unified;
+    final userCurrency =
+        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+
+    if (isUnifiedView && _convertedAmounts.isEmpty && !_isLoading) {
+      _calculateConvertedAmounts(userCurrency);
+    }
+  }
+
+  Future<void> _calculateConvertedAmounts(String targetCurrency) async {
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final conversionService = context.read<CurrencyConversionService>();
+      final newAmounts = <String, (double, String)?>{};
+
+      // Convert income and expenses for each currency
+      for (final entry in widget.summary.currencyTotals.entries) {
+        final currency = entry.key;
+        final totals = entry.value;
+
+        // Convert monthly income
+        if (totals.monthlyIncome != 0) {
+          final (total, details) = await conversionService
+              .getAmountWithConversionDetails(
+                amounts: {currency: totals.monthlyIncome},
+                targetCurrency: targetCurrency,
+              );
+          newAmounts['income_$currency'] = (total, details);
+        }
+
+        // Convert monthly expenses
+        if (totals.monthlyExpenses != 0) {
+          final (total, details) = await conversionService
+              .getAmountWithConversionDetails(
+                amounts: {currency: totals.monthlyExpenses},
+                targetCurrency: targetCurrency,
+              );
+          newAmounts['expenses_$currency'] = (total, details);
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _convertedAmounts = newAmounts;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error calculating conversion: $e')),
+            );
+          }
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // final currencyFormat = NumberFormat.currency(symbol: '\$');
+    final storage = context.watch<LocalStorageService>();
+    final isUnifiedView =
+        storage.currencyDisplayMode == CurrencyDisplayMode.unified;
+    final userCurrency =
+        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Monthly Overview', style: theme.textTheme.titleMedium),
-            const SizedBox(height: 16),
-            _OverviewItem(
-              icon: Icons.arrow_upward,
-              label: 'Income',
-              amount: summary.monthlyIncome,
-              color: AppTheme.light(context).colorScheme.primary,
-            ),
-            const SizedBox(height: 8),
-            _OverviewItem(
-              icon: Icons.arrow_downward,
-              label: 'Expenses',
-              amount: summary.monthlyExpenses,
-              color: AppTheme.light(context).colorScheme.error,
-            ),
-            const SizedBox(height: 8),
-            _OverviewItem(
-              icon: Icons.savings,
-              label: 'Savings',
-              amount: summary.monthlySavings,
-              color: AppTheme.light(context).colorScheme.primary,
-            ),
-          ],
+      child: InkWell(
+        onTap: (isUnifiedView && widget.summary.currencyTotals.length > 1)
+            ? () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              }
+            : null,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text('Monthly Overview', style: theme.textTheme.titleMedium),
+                  const Spacer(),
+                  if (isUnifiedView && widget.summary.currencyTotals.length > 1)
+                    AnimatedRotation(
+                      duration: const Duration(milliseconds: 200),
+                      turns: _isExpanded ? 0.5 : 0,
+                      child: const Icon(Icons.keyboard_arrow_down),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (_isLoading)
+                const Center(child: CircularProgressIndicator())
+              else if (isUnifiedView)
+                _buildUnifiedOverview(theme, userCurrency)
+              else
+                _buildGroupedOverview(theme),
+            ],
+          ),
         ),
       ),
     );
   }
-}
 
-class _OverviewItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final double amount;
-  final Color color;
+  Widget _buildUnifiedOverview(ThemeData theme, String currency) {
+    // Calculate totals
+    double totalIncome = 0;
+    double totalExpenses = 0;
+    final incomeDetails = <String>[];
+    final expensesDetails = <String>[];
 
-  const _OverviewItem({
-    required this.icon,
-    required this.label,
-    required this.amount,
-    required this.color,
-  });
+    for (final entry in widget.summary.currencyTotals.entries) {
+      final currencyCode = entry.key;
+      final converted = _convertedAmounts['income_$currencyCode'];
+      if (converted != null) {
+        totalIncome += converted.$1;
+        if (converted.$2.isNotEmpty) {
+          incomeDetails.add(converted.$2);
+        }
+      }
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$');
+      final expenseConverted = _convertedAmounts['expenses_$currencyCode'];
+      if (expenseConverted != null) {
+        totalExpenses += expenseConverted.$1;
+        if (expenseConverted.$2.isNotEmpty) {
+          expensesDetails.add(expenseConverted.$2);
+        }
+      }
+    }
 
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: color),
-        const SizedBox(width: 8),
-        Text(label, style: theme.textTheme.bodyMedium),
-        const Spacer(),
         Text(
-          currencyFormat.format(amount),
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
+          'Income',
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
+        const SizedBox(height: 4),
+        Text(
+          NumberFormat.currency(
+            symbol: CurrencyUtils.getCurrencySymbol(currency),
+          ).format(totalIncome),
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: theme.colorScheme.primary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        if (_isExpanded && incomeDetails.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 4, bottom: 8),
+            child: Text(
+              incomeDetails.join('\n'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        const SizedBox(height: 16),
+        Text(
+          'Expenses',
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          NumberFormat.currency(
+            symbol: CurrencyUtils.getCurrencySymbol(currency),
+          ).format(totalExpenses),
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: theme.colorScheme.error,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        if (_isExpanded && expensesDetails.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              expensesDetails.join('\n'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
       ],
+    );
+  }
+
+  Widget _buildGroupedOverview(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: widget.summary.currencyTotals.entries.map((entry) {
+        final currency = entry.key;
+        final totals = entry.value;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              currency,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Income',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        NumberFormat.currency(
+                          symbol: CurrencyUtils.getCurrencySymbol(currency),
+                        ).format(totals.monthlyIncome),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 24),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Expenses',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        NumberFormat.currency(
+                          symbol: CurrencyUtils.getCurrencySymbol(currency),
+                        ).format(totals.monthlyExpenses),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: theme.colorScheme.error,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+        );
+      }).toList(),
     );
   }
 }
 
-class _TopCategoriesCard extends StatelessWidget {
-  final List<CategorySummary> categories;
+class _TopCategoriesCard extends StatefulWidget {
+  final DashboardSummary summary;
 
-  const _TopCategoriesCard({required this.categories});
+  const _TopCategoriesCard({required this.summary});
+
+  @override
+  State<_TopCategoriesCard> createState() => _TopCategoriesCardState();
+}
+
+class _TopCategoriesCardState extends State<_TopCategoriesCard> {
+  bool _isLoading = false;
+  Map<String, (double, String)?> _convertedAmounts = {};
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final storage = context.read<LocalStorageService>();
+    final isUnifiedView =
+        storage.currencyDisplayMode == CurrencyDisplayMode.unified;
+    final userCurrency =
+        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+
+    if (isUnifiedView && _convertedAmounts.isEmpty && !_isLoading) {
+      _calculateConvertedAmounts(userCurrency);
+    }
+  }
+
+  Future<void> _calculateConvertedAmounts(String targetCurrency) async {
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final conversionService = context.read<CurrencyConversionService>();
+      final newAmounts = <String, (double, String)?>{};
+
+      // Convert amounts for each category
+      for (final category in widget.summary.topCategories) {
+        final (total, details) = await conversionService
+            .getAmountWithConversionDetails(
+              amounts: {category.currency: category.amount},
+              targetCurrency: targetCurrency,
+            );
+        newAmounts[category.categoryId] = (total, details);
+      }
+
+      if (mounted) {
+        setState(() {
+          _convertedAmounts = newAmounts;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error calculating conversion: $e')),
+            );
+          }
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$');
+    final storage = context.watch<LocalStorageService>();
+    final isUnifiedView =
+        storage.currencyDisplayMode == CurrencyDisplayMode.unified;
+    final userCurrency =
+        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
 
     return Card(
       child: Padding(
@@ -238,51 +669,170 @@ class _TopCategoriesCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            ...categories.map(
-              (category) => InkWell(
-                onTap: () => context.push(
-                  '/transactions',
-                  extra: {'categoryId': category.categoryId},
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    children: [
-                      Text(category.icon),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              category.name,
-                              style: theme.textTheme.bodyMedium,
-                            ),
-                            const SizedBox(height: 4),
-                            LinearProgressIndicator(
-                              value: category.percentage / 100,
-                              backgroundColor: theme.colorScheme.primary
-                                  .withValues(alpha: 0.1),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Text(
-                        currencyFormat.format(category.amount),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            const SizedBox(height: 16),
+            if (_isLoading)
+              const Center(child: CircularProgressIndicator())
+            else if (isUnifiedView)
+              _buildUnifiedCategories(theme, userCurrency)
+            else
+              _buildGroupedCategories(theme),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildUnifiedCategories(ThemeData theme, String currency) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: widget.summary.topCategories.map((category) {
+        final convertedData = _convertedAmounts[category.categoryId];
+        if (convertedData == null) return const SizedBox.shrink();
+
+        return InkWell(
+          onTap: () => context.push(
+            '/transactions',
+            extra: {'categoryId': category.categoryId},
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(category.icon),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                category.name,
+                                style: theme.textTheme.titleSmall,
+                              ),
+                              const Spacer(),
+                              Text(
+                                NumberFormat.currency(
+                                  symbol: CurrencyUtils.getCurrencySymbol(
+                                    currency,
+                                  ),
+                                ).format(convertedData.$1),
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          LinearProgressIndicator(
+                            value: category.percentage / 100,
+                            backgroundColor: theme.colorScheme.primary
+                                .withOpacity(0.1),
+                          ),
+                          if (convertedData.$2.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                convertedData.$2,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildGroupedCategories(ThemeData theme) {
+    // Group categories by currency
+    final groupedCategories = <String, List<CategorySummary>>{};
+    for (final category in widget.summary.topCategories) {
+      groupedCategories.putIfAbsent(category.currency, () => []).add(category);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ...groupedCategories.entries.map((entry) {
+          final currency = entry.key;
+          final categories = entry.value;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                currency,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ...categories.map((category) {
+                return InkWell(
+                  onTap: () => context.push(
+                    '/transactions',
+                    extra: {'categoryId': category.categoryId},
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      children: [
+                        Text(category.icon),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    category.name,
+                                    style: theme.textTheme.titleSmall,
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    NumberFormat.currency(
+                                      symbol: CurrencyUtils.getCurrencySymbol(
+                                        currency,
+                                      ),
+                                    ).format(category.amount),
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              LinearProgressIndicator(
+                                value: category.percentage / 100,
+                                backgroundColor: theme.colorScheme.primary
+                                    .withOpacity(0.1),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+              const SizedBox(height: 16),
+            ],
+          );
+        }).toList(),
+      ],
     );
   }
 }
@@ -295,7 +845,6 @@ class _RecentTransactionsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final currencyFormat = NumberFormat.currency(symbol: '\$');
     final dateFormat = DateFormat('MMM d');
 
     return Card(
@@ -315,11 +864,26 @@ class _RecentTransactionsCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            ...transactions.map(
-              (transaction) => ListTile(
+            ...transactions.map((transaction) {
+              final currencyFormat = NumberFormat.currency(
+                symbol: CurrencyUtils.getCurrencySymbol(transaction.currency),
+              );
+
+              return ListTile(
                 leading: Text(transaction.categoryIcon),
                 title: Text(transaction.description),
-                subtitle: Text(dateFormat.format(transaction.date)),
+                subtitle: Row(
+                  children: [
+                    Text(dateFormat.format(transaction.date)),
+                    const SizedBox(width: 8),
+                    Text(
+                      transaction.currency,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
                 trailing: Text(
                   currencyFormat.format(transaction.amount),
                   style: theme.textTheme.bodyLarge?.copyWith(
@@ -331,8 +895,8 @@ class _RecentTransactionsCard extends StatelessWidget {
                 ),
                 onTap: () =>
                     context.push('/transactions/details/${transaction.id}'),
-              ),
-            ),
+              );
+            }),
           ],
         ),
       ),

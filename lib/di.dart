@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spendora_app/core/services/local_storage_service.dart';
+import 'package:spendora_app/core/services/currency_conversion_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:spendora_app/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:spendora_app/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:spendora_app/features/auth/domain/repositories/auth_repository.dart';
@@ -28,6 +30,11 @@ Future<void> setupDependencies() async {
   // Core
   final prefs = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => LocalStorageService(prefs));
+  sl.registerLazySingleton(
+    () => CurrencyConversionService(
+      apiKey: dotenv.env['EXCHANGE_RATE_API_KEY'] ?? '',
+    ),
+  );
 
   // Features
   _initializeAuth();
@@ -123,7 +130,7 @@ void _initializeOnboarding() {
 void _initializeDashboard() {
   // Repositories
   sl.registerLazySingleton<DashboardRepository>(
-    () => DashboardRepositoryImpl(),
+    () => DashboardRepositoryImpl(localStorage: sl()),
   );
 
   // ViewModels

@@ -15,9 +15,13 @@ import 'package:spendora_app/features/onboarding/presentation/viewmodels/onboard
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
 import 'package:spendora_app/features/settings/presentation/viewmodels/settings_viewmodel.dart';
 import 'package:spendora_app/firebase_options.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:spendora_app/core/services/currency_conversion_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
 
   // Initialize Firebase first
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -55,6 +59,7 @@ class SpendoraApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => sl<SettingsViewModel>()),
         ChangeNotifierProvider(create: (_) => sl<TransactionViewModel>()),
         ChangeNotifierProvider(create: (_) => sl<DashboardViewModel>()),
+        ChangeNotifierProvider(create: (_) => sl<CurrencyConversionService>()),
       ],
       child: Consumer<LocalStorageService>(
         builder: (context, storage, child) => MaterialApp.router(
