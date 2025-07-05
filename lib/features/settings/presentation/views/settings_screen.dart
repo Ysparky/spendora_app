@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:spendora_app/core/router/router.dart';
+import 'package:spendora_app/core/services/local_storage_service.dart';
 import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:spendora_app/features/settings/presentation/viewmodels/settings_viewmodel.dart';
 
@@ -50,16 +51,14 @@ class SettingsScreen extends StatelessWidget {
               Card(
                 child: Column(
                   children: [
-                    ListTile(
-                      leading: const Icon(Icons.person_outline),
-                      title: Text(
-                        context.read<AuthProvider>().user?.name ?? 'Unknown',
+                    Consumer<AuthProvider>(
+                      builder: (context, authProvider, _) => ListTile(
+                        leading: const Icon(Icons.person_outline),
+                        title: Text(authProvider.user?.name ?? 'Unknown'),
+                        subtitle: Text(authProvider.user?.email ?? ''),
+                        trailing: const Icon(Icons.edit),
+                        onTap: () => _showEditProfileDialog(context),
                       ),
-                      subtitle: Text(
-                        context.read<AuthProvider>().user?.email ?? '',
-                      ),
-                      trailing: const Icon(Icons.edit),
-                      onTap: () => _showEditProfileDialog(context),
                     ),
                   ],
                 ),
@@ -71,6 +70,29 @@ class SettingsScreen extends StatelessWidget {
               Card(
                 child: Column(
                   children: [
+                    // Theme
+                    Consumer<LocalStorageService>(
+                      builder: (context, storage, _) => SwitchListTile(
+                        secondary: Icon(
+                          storage.isDarkMode
+                              ? Icons.dark_mode
+                              : Icons.light_mode,
+                        ),
+                        title: const Text('Dark Mode'),
+                        value: storage.isDarkMode,
+                        onChanged: (value) => storage.setDarkMode(value),
+                      ),
+                    ),
+                    const Divider(),
+                    // Language
+                    ListTile(
+                      leading: const Icon(Icons.language),
+                      title: const Text('Language'),
+                      subtitle: Text(preferences.language.toUpperCase()),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {}, // TODO: Implement language selection
+                    ),
+                    const Divider(),
                     // Currency
                     ListTile(
                       leading: const Icon(Icons.currency_exchange),
@@ -79,14 +101,30 @@ class SettingsScreen extends StatelessWidget {
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () => _showCurrencyPicker(context),
                     ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Data Management Section
+              const _SectionHeader(title: 'Data Management'),
+              Card(
+                child: Column(
+                  children: [
+                    // Categories
+                    ListTile(
+                      leading: const Icon(Icons.category_outlined),
+                      title: const Text('Manage Categories'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {}, // TODO: Navigate to categories management
+                    ),
                     const Divider(),
-                    // Notifications
-                    SwitchListTile(
-                      secondary: const Icon(Icons.notifications_outlined),
-                      title: const Text('Notifications'),
-                      subtitle: const Text('Enable push notifications'),
-                      value: preferences.notifications,
-                      onChanged: viewModel.updateNotifications,
+                    // Tags
+                    ListTile(
+                      leading: const Icon(Icons.tag),
+                      title: const Text('Manage Tags'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {}, // TODO: Navigate to tags management
                     ),
                   ],
                 ),
@@ -103,20 +141,29 @@ class SettingsScreen extends StatelessWidget {
                       title: const Text('Sign Out'),
                       onTap: () => _handleSignOut(context),
                     ),
-                    ListTile(
-                      leading: const Icon(
-                        Icons.delete_forever,
-                        color: Colors.red,
+                    Theme(
+                      data: Theme.of(context).copyWith(
+                        listTileTheme: ListTileThemeData(
+                          textColor: Theme.of(context).colorScheme.error,
+                          iconColor: Theme.of(context).colorScheme.error,
+                        ),
                       ),
-                      title: const Text(
-                        'Delete Account',
-                        style: TextStyle(color: Colors.red),
+                      child: ExpansionTile(
+                        title: const Text('Advanced'),
+                        leading: const Icon(Icons.warning_outlined),
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.delete_forever),
+                            title: const Text('Delete Account'),
+                            onTap: () => _showDeleteAccountDialog(context),
+                          ),
+                        ],
                       ),
-                      onTap: () => _showDeleteAccountDialog(context),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 32),
             ],
           );
         },
@@ -125,37 +172,10 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showEditProfileDialog(BuildContext context) {
-    final nameController = TextEditingController(
-      text: context.read<AuthProvider>().user?.name,
-    );
-
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Profile'),
-        content: TextField(
-          controller: nameController,
-          decoration: const InputDecoration(
-            labelText: 'Name',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => context.pop(),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              context.read<AuthProvider>().updateProfile(
-                nameController.text.trim(),
-              );
-              context.pop();
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
+      builder: (context) =>
+          _EditProfileDialog(authProvider: context.read<AuthProvider>()),
     );
   }
 
@@ -271,6 +291,87 @@ class _SectionHeader extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
+    );
+  }
+}
+
+class _EditProfileDialog extends StatefulWidget {
+  final AuthProvider authProvider;
+
+  const _EditProfileDialog({required this.authProvider});
+
+  @override
+  State<_EditProfileDialog> createState() => _EditProfileDialogState();
+}
+
+class _EditProfileDialogState extends State<_EditProfileDialog> {
+  late final TextEditingController _nameController;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(
+      text: widget.authProvider.user?.name,
+    );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleSave() async {
+    if (_isLoading) return;
+
+    setState(() => _isLoading = true);
+    try {
+      await widget.authProvider.updateProfile(_nameController.text.trim());
+      if (mounted) {
+        context.pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit Profile'),
+      content: TextField(
+        controller: _nameController,
+        decoration: const InputDecoration(
+          labelText: 'Name',
+          border: OutlineInputBorder(),
+        ),
+        enabled: !_isLoading,
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isLoading ? null : () => context.pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: _isLoading ? null : _handleSave,
+          child: _isLoading
+              ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : const Text('Save'),
+        ),
+      ],
     );
   }
 }

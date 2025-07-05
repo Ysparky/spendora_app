@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:spendora_app/core/router/router.dart';
+import 'package:spendora_app/core/services/local_storage_service.dart';
 import 'package:spendora_app/core/theme/app_theme.dart';
 import 'package:spendora_app/di.dart';
 import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
@@ -46,6 +47,7 @@ class SpendoraApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider(create: (_) => sl<LocalStorageService>()),
         ChangeNotifierProvider(create: (_) => sl<AuthProvider>()),
         ChangeNotifierProvider(create: (_) => sl<LoginViewModel>()),
         ChangeNotifierProvider(create: (_) => sl<RegisterViewModel>()),
@@ -54,12 +56,15 @@ class SpendoraApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => sl<TransactionViewModel>()),
         ChangeNotifierProvider(create: (_) => sl<DashboardViewModel>()),
       ],
-      child: MaterialApp.router(
-        title: 'Spendora',
-        theme: AppTheme.light(context),
-        darkTheme: AppTheme.dark(context),
-        routerConfig: AppRouter.router,
-        debugShowCheckedModeBanner: false,
+      child: Consumer<LocalStorageService>(
+        builder: (context, storage, child) => MaterialApp.router(
+          title: 'Spendora',
+          theme: AppTheme.light(context),
+          darkTheme: AppTheme.dark(context),
+          themeMode: storage.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          routerConfig: AppRouter.router,
+          debugShowCheckedModeBanner: false,
+        ),
       ),
     );
   }

@@ -149,22 +149,21 @@ class AuthProvider extends ChangeNotifier {
     try {
       debugPrint('AuthProvider: Updating profile');
       _error = null;
-      _setStatus(AuthStatus.loading);
+
       await _authRepository.updateProfile(name);
 
-      // Refresh user data
+      // Refresh user data without changing status
       final userData = await _authRepository.getCurrentUserData();
       if (userData != null) {
         _user = userData;
-        _setStatus(AuthStatus.authenticated);
+        notifyListeners(); // Just notify about user data change
       } else {
-        _setStatus(AuthStatus.error);
         throw Exception('Failed to refresh user data after profile update');
       }
     } catch (e) {
       debugPrint('AuthProvider: Profile update failed - $e');
       _error = e.toString();
-      _setStatus(AuthStatus.error);
+      notifyListeners();
       rethrow;
     }
   }
