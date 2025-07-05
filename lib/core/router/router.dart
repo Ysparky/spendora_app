@@ -11,6 +11,8 @@ import 'package:spendora_app/features/settings/presentation/views/settings_scree
 import 'package:spendora_app/features/transactions/presentation/views/add_transaction_screen.dart';
 import 'package:spendora_app/features/transactions/presentation/views/categories_overview_screen.dart';
 import 'package:spendora_app/features/transactions/presentation/views/transaction_list_screen.dart';
+import 'package:spendora_app/features/transactions/presentation/views/transaction_details_screen.dart';
+import 'package:spendora_app/features/transactions/presentation/views/edit_transaction_screen.dart';
 
 class AppRouter {
   static const String login = '/login';
@@ -77,6 +79,17 @@ class AppRouter {
         GoRoute(
           path: '/categories',
           builder: (context, state) => const CategoriesOverviewScreen(),
+        ),
+        GoRoute(
+          path: '/transactions/details/:id',
+          builder: (context, state) => TransactionDetailsScreen(
+            transactionId: state.pathParameters['id']!,
+          ),
+        ),
+        GoRoute(
+          path: '/transactions/edit/:id',
+          builder: (context, state) =>
+              EditTransactionScreen(transactionId: state.pathParameters['id']!),
         ),
         GoRoute(
           path: home,
