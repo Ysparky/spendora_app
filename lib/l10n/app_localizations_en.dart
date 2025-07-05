@@ -18,13 +18,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginButton => 'Login';
 
   @override
-  String get registerButton => 'Register';
+  String get registerTitle => 'Create Account';
+
+  @override
+  String get registerButton => 'Create Account';
+
+  @override
+  String get fullNameHint => 'Full Name';
 
   @override
   String get emailHint => 'Email';
 
   @override
   String get passwordHint => 'Password';
+
+  @override
+  String get confirmPasswordHint => 'Confirm Password';
+
+  @override
+  String get forgotPassword => 'Forgot Password?';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account?';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get enterName => 'Please enter your name';
+
+  @override
+  String get enterEmail => 'Please enter your email';
+
+  @override
+  String get enterValidEmail => 'Please enter a valid email';
+
+  @override
+  String get enterPassword => 'Please enter a password';
+
+  @override
+  String get passwordLength => 'Password must be at least 6 characters';
+
+  @override
+  String get confirmPassword => 'Please confirm your password';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get enterEmailForReset => 'Please enter your email address';
+
+  @override
+  String get passwordResetSent => 'Password reset email sent';
 
   @override
   String get homeTab => 'Home';

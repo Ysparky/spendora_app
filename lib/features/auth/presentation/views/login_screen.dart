@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:spendora_app/core/router/router.dart';
 import 'package:spendora_app/features/auth/presentation/viewmodels/login_viewmodel.dart';
+import 'package:spendora_app/l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -46,7 +47,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text.trim();
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your email address')),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.enterEmailForReset),
+        ),
       );
       return;
     }
@@ -54,13 +57,17 @@ class _LoginScreenState extends State<LoginScreen> {
     await context.read<LoginViewModel>().sendPasswordResetEmail(email);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password reset email sent')),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.passwordResetSent),
+        ),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -73,9 +80,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Logo or App Name
-                  const Text(
-                    'Spendora',
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                  Text(
+                    l10n.appName,
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 48),
@@ -84,17 +94,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.emailHint,
+                      prefixIcon: const Icon(Icons.email_outlined),
+                      border: const OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                        return l10n.enterEmail;
                       }
                       if (!value.contains('@')) {
-                        return 'Please enter a valid email';
+                        return l10n.enterValidEmail;
                       }
                       return null;
                     },
@@ -106,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: l10n.passwordHint,
                       prefixIcon: const Icon(Icons.lock_outlined),
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
@@ -124,10 +134,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
+                        return l10n.enterPassword;
                       }
                       if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
+                        return l10n.passwordLength;
                       }
                       return null;
                     },
@@ -139,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: _handleForgotPassword,
-                      child: const Text('Forgot Password?'),
+                      child: Text(l10n.forgotPassword),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -160,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                               )
-                            : const Text('Login'),
+                            : Text(l10n.loginButton),
                       );
                     },
                   ),
@@ -170,10 +180,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Don't have an account?"),
+                      Text(l10n.dontHaveAccount),
                       TextButton(
                         onPressed: () => context.go(AppRouter.register),
-                        child: const Text('Register'),
+                        child: Text(l10n.registerButton),
                       ),
                     ],
                   ),

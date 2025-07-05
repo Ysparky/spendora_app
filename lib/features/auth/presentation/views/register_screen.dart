@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:spendora_app/core/router/router.dart';
 import 'package:spendora_app/features/auth/presentation/viewmodels/register_viewmodel.dart';
+import 'package:spendora_app/l10n/app_localizations.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -46,8 +47,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Account')),
+      appBar: AppBar(title: Text(l10n.registerTitle)),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -62,14 +65,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormField(
                     controller: _nameController,
                     textCapitalization: TextCapitalization.words,
-                    decoration: const InputDecoration(
-                      labelText: 'Full Name',
-                      prefixIcon: Icon(Icons.person_outline),
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.fullNameHint,
+                      prefixIcon: const Icon(Icons.person_outline),
+                      border: const OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your name';
+                        return l10n.enterName;
                       }
                       return null;
                     },
@@ -80,17 +83,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.emailHint,
+                      prefixIcon: const Icon(Icons.email_outlined),
+                      border: const OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                        return l10n.enterEmail;
                       }
                       if (!value.contains('@')) {
-                        return 'Please enter a valid email';
+                        return l10n.enterValidEmail;
                       }
                       return null;
                     },
@@ -102,7 +105,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: l10n.passwordHint,
                       prefixIcon: const Icon(Icons.lock_outlined),
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
@@ -120,10 +123,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a password';
+                        return l10n.enterPassword;
                       }
                       if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
+                        return l10n.passwordLength;
                       }
                       return null;
                     },
@@ -135,7 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     controller: _confirmPasswordController,
                     obscureText: _obscureConfirmPassword,
                     decoration: InputDecoration(
-                      labelText: 'Confirm Password',
+                      labelText: l10n.confirmPasswordHint,
                       prefixIcon: const Icon(Icons.lock_outlined),
                       border: const OutlineInputBorder(),
                       suffixIcon: IconButton(
@@ -153,10 +156,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please confirm your password';
+                        return l10n.confirmPassword;
                       }
                       if (value != _passwordController.text) {
-                        return 'Passwords do not match';
+                        return l10n.passwordsDoNotMatch;
                       }
                       return null;
                     },
@@ -179,7 +182,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                 ),
                               )
-                            : const Text('Create Account'),
+                            : Text(l10n.registerButton),
                       );
                     },
                   ),
@@ -189,10 +192,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Already have an account?'),
+                      Text(l10n.alreadyHaveAccount),
                       TextButton(
                         onPressed: () => context.go(AppRouter.login),
-                        child: const Text('Login'),
+                        child: Text(l10n.loginButton),
                       ),
                     ],
                   ),

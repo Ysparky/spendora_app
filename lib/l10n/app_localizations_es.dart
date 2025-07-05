@@ -18,13 +18,58 @@ class AppLocalizationsEs extends AppLocalizations {
   String get loginButton => 'Iniciar sesión';
 
   @override
-  String get registerButton => 'Registrarse';
+  String get registerTitle => 'Crear cuenta';
+
+  @override
+  String get registerButton => 'Crear cuenta';
+
+  @override
+  String get fullNameHint => 'Nombre completo';
 
   @override
   String get emailHint => 'Correo electrónico';
 
   @override
   String get passwordHint => 'Contraseña';
+
+  @override
+  String get confirmPasswordHint => 'Confirmar contraseña';
+
+  @override
+  String get forgotPassword => '¿Olvidaste tu contraseña?';
+
+  @override
+  String get dontHaveAccount => '¿No tienes una cuenta?';
+
+  @override
+  String get alreadyHaveAccount => '¿Ya tienes una cuenta?';
+
+  @override
+  String get enterName => 'Por favor, ingresa tu nombre';
+
+  @override
+  String get enterEmail => 'Por favor, ingresa tu correo electrónico';
+
+  @override
+  String get enterValidEmail => 'Por favor, ingresa un correo electrónico válido';
+
+  @override
+  String get enterPassword => 'Por favor, ingresa una contraseña';
+
+  @override
+  String get passwordLength => 'La contraseña debe tener al menos 6 caracteres';
+
+  @override
+  String get confirmPassword => 'Por favor, confirma tu contraseña';
+
+  @override
+  String get passwordsDoNotMatch => 'Las contraseñas no coinciden';
+
+  @override
+  String get enterEmailForReset => 'Por favor, ingresa tu correo electrónico';
+
+  @override
+  String get passwordResetSent => 'Se ha enviado el correo de restablecimiento de contraseña';
 
   @override
   String get homeTab => 'Inicio';

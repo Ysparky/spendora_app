@@ -14,9 +14,17 @@
     "@loginButton": {
         "description": "Text for the login button"
     },
-    "registerButton": "Register",
+    "registerTitle": "Create Account",
+    "@registerTitle": {
+        "description": "Title shown on the register screen"
+    },
+    "registerButton": "Create Account",
     "@registerButton": {
         "description": "Text for the register button"
+    },
+    "fullNameHint": "Full Name",
+    "@fullNameHint": {
+        "description": "Hint text for full name input field"
     },
     "emailHint": "Email",
     "@emailHint": {
@@ -25,6 +33,58 @@
     "passwordHint": "Password",
     "@passwordHint": {
         "description": "Hint text for password input field"
+    },
+    "confirmPasswordHint": "Confirm Password",
+    "@confirmPasswordHint": {
+        "description": "Hint text for confirm password input field"
+    },
+    "forgotPassword": "Forgot Password?",
+    "@forgotPassword": {
+        "description": "Text for forgot password button"
+    },
+    "dontHaveAccount": "Don't have an account?",
+    "@dontHaveAccount": {
+        "description": "Text shown before register link"
+    },
+    "alreadyHaveAccount": "Already have an account?",
+    "@alreadyHaveAccount": {
+        "description": "Text shown before login link"
+    },
+    "enterName": "Please enter your name",
+    "@enterName": {
+        "description": "Validation message for empty name"
+    },
+    "enterEmail": "Please enter your email",
+    "@enterEmail": {
+        "description": "Validation message for empty email"
+    },
+    "enterValidEmail": "Please enter a valid email",
+    "@enterValidEmail": {
+        "description": "Validation message for invalid email"
+    },
+    "enterPassword": "Please enter a password",
+    "@enterPassword": {
+        "description": "Validation message for empty password"
+    },
+    "passwordLength": "Password must be at least 6 characters",
+    "@passwordLength": {
+        "description": "Validation message for short password"
+    },
+    "confirmPassword": "Please confirm your password",
+    "@confirmPassword": {
+        "description": "Validation message for empty confirm password"
+    },
+    "passwordsDoNotMatch": "Passwords do not match",
+    "@passwordsDoNotMatch": {
+        "description": "Validation message for non-matching passwords"
+    },
+    "enterEmailForReset": "Please enter your email address",
+    "@enterEmailForReset": {
+        "description": "Message shown when trying to reset password without email"
+    },
+    "passwordResetSent": "Password reset email sent",
+    "@passwordResetSent": {
+        "description": "Message shown after password reset email is sent"
     },
 
     "homeTab": "Home",

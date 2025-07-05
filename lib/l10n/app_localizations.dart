@@ -113,11 +113,23 @@ abstract class AppLocalizations {
   /// **'Login'**
   String get loginButton;
 
+  /// Title shown on the register screen
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get registerTitle;
+
   /// Text for the register button
   ///
   /// In en, this message translates to:
-  /// **'Register'**
+  /// **'Create Account'**
   String get registerButton;
+
+  /// Hint text for full name input field
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullNameHint;
 
   /// Hint text for email input field
   ///
@@ -130,6 +142,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password'**
   String get passwordHint;
+
+  /// Hint text for confirm password input field
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPasswordHint;
+
+  /// Text for forgot password button
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password?'**
+  String get forgotPassword;
+
+  /// Text shown before register link
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get dontHaveAccount;
+
+  /// Text shown before login link
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get alreadyHaveAccount;
+
+  /// Validation message for empty name
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your name'**
+  String get enterName;
+
+  /// Validation message for empty email
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email'**
+  String get enterEmail;
+
+  /// Validation message for invalid email
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get enterValidEmail;
+
+  /// Validation message for empty password
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a password'**
+  String get enterPassword;
+
+  /// Validation message for short password
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordLength;
+
+  /// Validation message for empty confirm password
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm your password'**
+  String get confirmPassword;
+
+  /// Validation message for non-matching passwords
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// Message shown when trying to reset password without email
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email address'**
+  String get enterEmailForReset;
+
+  /// Message shown after password reset email is sent
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset email sent'**
+  String get passwordResetSent;
 
   /// Label for home tab
   ///
