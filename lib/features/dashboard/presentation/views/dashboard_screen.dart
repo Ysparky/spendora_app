@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:spendora_app/core/theme/app_theme.dart';
 import 'package:spendora_app/core/utils/currency_utils.dart';
 import 'package:spendora_app/core/services/local_storage_service.dart';
 import 'package:spendora_app/core/services/currency_conversion_service.dart';
@@ -10,6 +9,7 @@ import 'package:spendora_app/features/auth/presentation/providers/auth_provider.
 import 'package:spendora_app/features/dashboard/domain/models/dashboard_summary.dart';
 import 'package:spendora_app/features/dashboard/presentation/viewmodels/dashboard_viewmodel.dart';
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
+import 'package:spendora_app/l10n/app_localizations.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -37,9 +37,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Text(l10n.dashboardTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -62,7 +64,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: viewModel.loadDashboardSummary,
-                    child: const Text('Retry'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -71,7 +73,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           final summary = viewModel.summary;
           if (summary == null) {
-            return const Center(child: Text('No data available'));
+            return Center(child: Text(l10n.noDataAvailable));
           }
 
           return RefreshIndicator(
@@ -165,7 +167,13 @@ class _BalanceCardState extends State<_BalanceCard> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error calculating conversion: $e')),
+              SnackBar(
+                content: Text(
+                  AppLocalizations.of(
+                    context,
+                  )!.errorCalculatingConversion(e.toString()),
+                ),
+              ),
             );
           }
         });
@@ -176,6 +184,7 @@ class _BalanceCardState extends State<_BalanceCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final storage = context.watch<LocalStorageService>();
     final isUnifiedView =
         storage.currencyDisplayMode == CurrencyDisplayMode.unified;
@@ -199,7 +208,7 @@ class _BalanceCardState extends State<_BalanceCard> {
             children: [
               Row(
                 children: [
-                  Text('Total Balance', style: theme.textTheme.titleMedium),
+                  Text(l10n.totalBalance, style: theme.textTheme.titleMedium),
                   const Spacer(),
                   if (isUnifiedView && widget.summary.currencyTotals.length > 1)
                     AnimatedRotation(
@@ -354,7 +363,13 @@ class _MonthlyOverviewCardState extends State<_MonthlyOverviewCard> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error calculating conversion: $e')),
+              SnackBar(
+                content: Text(
+                  AppLocalizations.of(
+                    context,
+                  )!.errorCalculatingConversion(e.toString()),
+                ),
+              ),
             );
           }
         });
@@ -365,6 +380,7 @@ class _MonthlyOverviewCardState extends State<_MonthlyOverviewCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final storage = context.watch<LocalStorageService>();
     final isUnifiedView =
         storage.currencyDisplayMode == CurrencyDisplayMode.unified;
@@ -388,7 +404,10 @@ class _MonthlyOverviewCardState extends State<_MonthlyOverviewCard> {
             children: [
               Row(
                 children: [
-                  Text('Monthly Overview', style: theme.textTheme.titleMedium),
+                  Text(
+                    l10n.monthlyOverview,
+                    style: theme.textTheme.titleMedium,
+                  ),
                   const Spacer(),
                   if (isUnifiedView && widget.summary.currencyTotals.length > 1)
                     AnimatedRotation(
@@ -413,6 +432,8 @@ class _MonthlyOverviewCardState extends State<_MonthlyOverviewCard> {
   }
 
   Widget _buildUnifiedOverview(ThemeData theme, String currency) {
+    final l10n = AppLocalizations.of(context)!;
+
     // Calculate totals
     double totalIncome = 0;
     double totalExpenses = 0;
@@ -442,7 +463,7 @@ class _MonthlyOverviewCardState extends State<_MonthlyOverviewCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Income',
+          l10n.income,
           style: theme.textTheme.titleSmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -469,7 +490,7 @@ class _MonthlyOverviewCardState extends State<_MonthlyOverviewCard> {
           ),
         const SizedBox(height: 16),
         Text(
-          'Expenses',
+          l10n.expenses,
           style: theme.textTheme.titleSmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -499,6 +520,8 @@ class _MonthlyOverviewCardState extends State<_MonthlyOverviewCard> {
   }
 
   Widget _buildGroupedOverview(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: widget.summary.currencyTotals.entries.map((entry) {
@@ -522,7 +545,7 @@ class _MonthlyOverviewCardState extends State<_MonthlyOverviewCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Income',
+                        l10n.income,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -546,7 +569,7 @@ class _MonthlyOverviewCardState extends State<_MonthlyOverviewCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Expenses',
+                        l10n.expenses,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -636,7 +659,13 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error calculating conversion: $e')),
+              SnackBar(
+                content: Text(
+                  AppLocalizations.of(
+                    context,
+                  )!.errorCalculatingConversion(e.toString()),
+                ),
+              ),
             );
           }
         });
@@ -647,6 +676,7 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final storage = context.watch<LocalStorageService>();
     final isUnifiedView =
         storage.currencyDisplayMode == CurrencyDisplayMode.unified;
@@ -662,10 +692,10 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Top Categories', style: theme.textTheme.titleMedium),
+                Text(l10n.topCategories, style: theme.textTheme.titleMedium),
                 TextButton(
                   onPressed: () => context.push('/categories'),
-                  child: const Text('See All'),
+                  child: Text(l10n.seeAll),
                 ),
               ],
             ),
@@ -683,6 +713,8 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
   }
 
   Widget _buildUnifiedCategories(ThemeData theme, String currency) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: widget.summary.topCategories.map((category) {
@@ -756,6 +788,8 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
   }
 
   Widget _buildGroupedCategories(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
+
     // Group categories by currency
     final groupedCategories = <String, List<CategorySummary>>{};
     for (final category in widget.summary.topCategories) {
@@ -845,7 +879,7 @@ class _RecentTransactionsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final dateFormat = DateFormat('MMM d');
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
       child: Padding(
@@ -856,47 +890,61 @@ class _RecentTransactionsCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Recent Transactions', style: theme.textTheme.titleMedium),
+                Text(
+                  l10n.recentTransactions,
+                  style: theme.textTheme.titleMedium,
+                ),
                 TextButton(
                   onPressed: () => context.push('/transactions'),
-                  child: const Text('See All'),
+                  child: Text(l10n.viewAll),
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            ...transactions.map((transaction) {
-              final currencyFormat = NumberFormat.currency(
-                symbol: CurrencyUtils.getCurrencySymbol(transaction.currency),
-              );
-
-              return ListTile(
-                leading: Text(transaction.categoryIcon),
-                title: Text(transaction.description),
-                subtitle: Row(
-                  children: [
-                    Text(dateFormat.format(transaction.date)),
-                    const SizedBox(width: 8),
-                    Text(
-                      transaction.currency,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.primary,
-                      ),
+            const SizedBox(height: 16),
+            if (transactions.isEmpty)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    l10n.noDataAvailable,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
-                  ],
-                ),
-                trailing: Text(
-                  currencyFormat.format(transaction.amount),
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: transaction.type == TransactionType.income.toString()
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.error,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                onTap: () =>
-                    context.push('/transactions/details/${transaction.id}'),
-              );
-            }),
+              )
+            else
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: transactions.length,
+                separatorBuilder: (context, index) => const Divider(),
+                itemBuilder: (context, index) {
+                  final transaction = transactions[index];
+                  return ListTile(
+                    onTap: () =>
+                        context.push('/transactions/${transaction.id}'),
+                    leading: Text(transaction.categoryIcon),
+                    title: Text(transaction.description),
+                    subtitle: Text(DateFormat.yMMMd().format(transaction.date)),
+                    trailing: Text(
+                      NumberFormat.currency(
+                        symbol: CurrencyUtils.getCurrencySymbol(
+                          transaction.currency,
+                        ),
+                      ).format(transaction.amount),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color:
+                            transaction.type ==
+                                TransactionType.income.toString()
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.error,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  );
+                },
+              ),
           ],
         ),
       ),

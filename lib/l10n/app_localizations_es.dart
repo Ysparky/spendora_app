@@ -163,4 +163,42 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get onboardingGetStarted => 'Comenzar';
+
+  @override
+  String get dashboardTitle => 'Panel';
+
+  @override
+  String get totalBalance => 'Balance total';
+
+  @override
+  String get monthlyOverview => 'Resumen mensual';
+
+  @override
+  String get expenses => 'Gastos';
+
+  @override
+  String get topCategories => 'Categorías principales';
+
+  @override
+  String get recentTransactions => 'Transacciones recientes';
+
+  @override
+  String get noDataAvailable => 'No hay datos disponibles';
+
+  @override
+  String get retry => 'Reintentar';
+
+  @override
+  String errorCalculatingConversion(String error) {
+    return 'Error al calcular la conversión: $error';
+  }
+
+  @override
+  String get seeAll => 'Ver todo';
+
+  @override
+  String get thisMonth => 'Este mes';
+
+  @override
+  String get viewAll => 'Ver todo';
 }

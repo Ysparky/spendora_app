@@ -214,5 +214,64 @@
     "onboardingGetStarted": "Get Started",
     "@onboardingGetStarted": {
         "description": "Text for the final button in onboarding"
+    },
+
+    "dashboardTitle": "Dashboard",
+    "@dashboardTitle": {
+        "description": "Title shown on the dashboard screen"
+    },
+    "totalBalance": "Total Balance",
+    "@totalBalance": {
+        "description": "Label for total balance section"
+    },
+    "monthlyOverview": "Monthly Overview",
+    "@monthlyOverview": {
+        "description": "Label for monthly overview section"
+    },
+    "income": "Income",
+    "@income": {
+        "description": "Label for income amount"
+    },
+    "expenses": "Expenses",
+    "@expenses": {
+        "description": "Label for expenses amount"
+    },
+    "topCategories": "Top Categories",
+    "@topCategories": {
+        "description": "Label for top categories section"
+    },
+    "recentTransactions": "Recent Transactions",
+    "@recentTransactions": {
+        "description": "Label for recent transactions section"
+    },
+    "noDataAvailable": "No data available",
+    "@noDataAvailable": {
+        "description": "Message shown when no data is available"
+    },
+    "retry": "Retry",
+    "@retry": {
+        "description": "Label for retry button"
+    },
+    "errorCalculatingConversion": "Error calculating conversion: {error}",
+    "@errorCalculatingConversion": {
+        "description": "Error message shown when currency conversion fails",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Network error"
+            }
+        }
+    },
+    "seeAll": "See All",
+    "@seeAll": {
+        "description": "Label for see all button"
+    },
+    "thisMonth": "This Month",
+    "@thisMonth": {
+        "description": "Label for current month"
+    },
+    "viewAll": "View All",
+    "@viewAll": {
+        "description": "Label for view all button"
     }
 } 

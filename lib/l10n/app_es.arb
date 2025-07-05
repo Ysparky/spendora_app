@@ -57,5 +57,18 @@
     "onboardingCategoriesTitle": "Categorías predeterminadas",
     "onboardingCategoriesDescription": "Hemos preparado algunas categorías para empezar",
     "onboardingNext": "Siguiente",
-    "onboardingGetStarted": "Comenzar"
+    "onboardingGetStarted": "Comenzar",
+
+    "dashboardTitle": "Panel",
+    "totalBalance": "Balance total",
+    "monthlyOverview": "Resumen mensual",
+    "expenses": "Gastos",
+    "topCategories": "Categorías principales",
+    "recentTransactions": "Transacciones recientes",
+    "noDataAvailable": "No hay datos disponibles",
+    "retry": "Reintentar",
+    "errorCalculatingConversion": "Error al calcular la conversión: {error}",
+    "seeAll": "Ver todo",
+    "thisMonth": "Este mes",
+    "viewAll": "Ver todo"
 } 
