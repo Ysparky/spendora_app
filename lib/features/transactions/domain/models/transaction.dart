@@ -30,7 +30,7 @@ abstract class Transaction with _$Transaction {
     required String id,
     required double amount,
     required TransactionType type,
-    required String categoryId,
+    String? categoryId,
     required List<String> tags,
     required DateTime date,
     required String description,
@@ -49,8 +49,8 @@ abstract class Transaction with _$Transaction {
     return Transaction.fromJson({
       ...data,
       'id': doc.id,
-      'date': (data['date'] as Timestamp).toDate().toIso8601String(),
-      'createdAt': (data['createdAt'] as Timestamp).toDate().toIso8601String(),
+      'date': (data['date'] as Timestamp).toDate(),
+      'createdAt': (data['createdAt'] as Timestamp).toDate(),
     });
   }
 }

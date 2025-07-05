@@ -9,7 +9,9 @@ import 'package:spendora_app/di.dart';
 import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:spendora_app/features/auth/presentation/viewmodels/login_viewmodel.dart';
 import 'package:spendora_app/features/auth/presentation/viewmodels/register_viewmodel.dart';
+import 'package:spendora_app/features/dashboard/presentation/viewmodels/dashboard_viewmodel.dart';
 import 'package:spendora_app/features/onboarding/presentation/viewmodels/onboarding_viewmodel.dart';
+import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
 import 'package:spendora_app/features/settings/presentation/viewmodels/settings_viewmodel.dart';
 import 'package:spendora_app/firebase_options.dart';
 
@@ -49,6 +51,8 @@ class SpendoraApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => sl<RegisterViewModel>()),
         ChangeNotifierProvider(create: (_) => sl<OnboardingViewModel>()),
         ChangeNotifierProvider(create: (_) => sl<SettingsViewModel>()),
+        ChangeNotifierProvider(create: (_) => sl<TransactionViewModel>()),
+        ChangeNotifierProvider(create: (_) => sl<DashboardViewModel>()),
       ],
       child: MaterialApp.router(
         title: 'Spendora',

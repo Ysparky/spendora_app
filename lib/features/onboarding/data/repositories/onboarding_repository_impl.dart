@@ -133,8 +133,6 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
       Category(id: 'health', name: 'Healthcare', icon: '🏥'),
       Category(id: 'education', name: 'Education', icon: '📚'),
       Category(id: 'travel', name: 'Travel', icon: '✈️'),
-      Category(id: 'savings', name: 'Savings', icon: '💰'),
-      Category(id: 'income', name: 'Income', icon: '💵'),
       Category(id: 'other', name: 'Other', icon: '📦'),
     ];
   }

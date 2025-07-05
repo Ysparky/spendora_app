@@ -7,12 +7,18 @@ import 'package:spendora_app/features/auth/domain/repositories/auth_repository.d
 import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:spendora_app/features/auth/presentation/viewmodels/login_viewmodel.dart';
 import 'package:spendora_app/features/auth/presentation/viewmodels/register_viewmodel.dart';
+import 'package:spendora_app/features/dashboard/data/repositories/dashboard_repository_impl.dart';
+import 'package:spendora_app/features/dashboard/domain/repositories/dashboard_repository.dart';
+import 'package:spendora_app/features/dashboard/presentation/viewmodels/dashboard_viewmodel.dart';
 import 'package:spendora_app/features/onboarding/data/repositories/onboarding_repository_impl.dart';
 import 'package:spendora_app/features/onboarding/domain/repositories/onboarding_repository.dart';
 import 'package:spendora_app/features/onboarding/presentation/viewmodels/onboarding_viewmodel.dart';
 import 'package:spendora_app/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:spendora_app/features/settings/domain/repositories/settings_repository.dart';
 import 'package:spendora_app/features/settings/presentation/viewmodels/settings_viewmodel.dart';
+import 'package:spendora_app/features/transactions/data/repositories/transaction_repository_impl.dart';
+import 'package:spendora_app/features/transactions/domain/repositories/transaction_repository.dart';
+import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
 
 /// Global ServiceLocator instance
 final sl = GetIt.instance;
@@ -25,13 +31,14 @@ Future<void> setupDependencies() async {
 
   // Features
   _initializeAuth();
+  _initializeOnboarding();
+  _initializeSettings();
+  _initializeDashboard();
   _initializeTransactions();
+
+  // TODO: Add budgets and reports
   _initializeBudgets();
   _initializeReports();
-  _initializeSettings();
-
-  // Onboarding
-  _initializeOnboarding();
 }
 
 void _initializeAuth() {
@@ -60,10 +67,14 @@ void _initializeTransactions() {
   // Data sources
 
   // Repositories
-
-  // Use cases
+  sl.registerLazySingleton<TransactionRepository>(
+    () => TransactionRepositoryImpl(),
+  );
 
   // ViewModels
+  sl.registerFactory<TransactionViewModel>(
+    () => TransactionViewModel(repository: sl()),
+  );
 }
 
 void _initializeBudgets() {
@@ -106,5 +117,17 @@ void _initializeOnboarding() {
   // ViewModels
   sl.registerFactory<OnboardingViewModel>(
     () => OnboardingViewModel(repository: sl()),
+  );
+}
+
+void _initializeDashboard() {
+  // Repositories
+  sl.registerLazySingleton<DashboardRepository>(
+    () => DashboardRepositoryImpl(),
+  );
+
+  // ViewModels
+  sl.registerFactory<DashboardViewModel>(
+    () => DashboardViewModel(repository: sl()),
   );
 }
