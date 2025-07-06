@@ -125,7 +125,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     final dateFormat = DateFormat.yMMMd(
       Localizations.localeOf(context).languageCode,
     );
-    final currencyFormat = NumberFormat.currency(symbol: _selectedCurrency);
+    // final currencyFormat = NumberFormat.currency(symbol: _selectedCurrency);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.addTransaction)),
@@ -254,7 +254,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           value: _selectedCategoryId,
                           decoration: InputDecoration(labelText: l10n.category),
                           items: viewModel.categories
-                              ?.map(
+                              .map(
                                 (category) => DropdownMenuItem(
                                   value: category.id,
                                   child: Row(
@@ -371,7 +371,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       color: Theme.of(context).scaffoldBackgroundColor,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: .1),
                           blurRadius: 8,
                           offset: const Offset(0, -4),
                         ),

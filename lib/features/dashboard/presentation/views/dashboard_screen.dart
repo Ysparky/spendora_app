@@ -713,8 +713,6 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
   }
 
   Widget _buildUnifiedCategories(ThemeData theme, String currency) {
-    final l10n = AppLocalizations.of(context)!;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: widget.summary.topCategories.map((category) {
@@ -762,7 +760,7 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
                           LinearProgressIndicator(
                             value: category.percentage / 100,
                             backgroundColor: theme.colorScheme.primary
-                                .withOpacity(0.1),
+                                .withValues(alpha: .1),
                           ),
                           if (convertedData.$2.isNotEmpty)
                             Padding(
@@ -788,8 +786,6 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
   }
 
   Widget _buildGroupedCategories(ThemeData theme) {
-    final l10n = AppLocalizations.of(context)!;
-
     // Group categories by currency
     final groupedCategories = <String, List<CategorySummary>>{};
     for (final category in widget.summary.topCategories) {
@@ -852,7 +848,7 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
                               LinearProgressIndicator(
                                 value: category.percentage / 100,
                                 backgroundColor: theme.colorScheme.primary
-                                    .withOpacity(0.1),
+                                    .withValues(alpha: .1),
                               ),
                             ],
                           ),
@@ -865,7 +861,7 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
               const SizedBox(height: 16),
             ],
           );
-        }).toList(),
+        }),
       ],
     );
   }

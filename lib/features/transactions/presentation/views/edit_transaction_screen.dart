@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:spendora_app/features/settings/presentation/viewmodels/settings_viewmodel.dart';
-import 'package:spendora_app/features/transactions/domain/models/category.dart';
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
 import 'package:spendora_app/l10n/app_localizations.dart';
@@ -172,11 +171,11 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
+    // final theme = Theme.of(context);
     final dateFormat = DateFormat.yMMMd(
       Localizations.localeOf(context).languageCode,
     );
-    final currencyFormat = NumberFormat.currency(symbol: _selectedCurrency);
+    // final currencyFormat = NumberFormat.currency(symbol: _selectedCurrency);
 
     if (_isLoading) {
       return Scaffold(
@@ -334,7 +333,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                           value: _selectedCategoryId,
                           decoration: InputDecoration(labelText: l10n.category),
                           items: viewModel.categories
-                              ?.map(
+                              .map(
                                 (category) => DropdownMenuItem(
                                   value: category.id,
                                   child: Row(
@@ -452,7 +451,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                       color: Theme.of(context).scaffoldBackgroundColor,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: .1),
                           blurRadius: 8,
                           offset: const Offset(0, -4),
                         ),

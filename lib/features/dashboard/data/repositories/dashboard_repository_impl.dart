@@ -1,24 +1,19 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' hide Transaction;
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart';
-import 'package:spendora_app/core/services/local_storage_service.dart';
 import 'package:spendora_app/features/dashboard/domain/models/dashboard_summary.dart';
 import 'package:spendora_app/features/dashboard/domain/repositories/dashboard_repository.dart';
-import 'package:spendora_app/features/transactions/domain/models/transaction.dart'
-    as app;
+import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
 
 class DashboardRepositoryImpl implements DashboardRepository {
   final FirebaseFirestore _firestore;
   final firebase_auth.FirebaseAuth _auth;
-  final LocalStorageService _localStorage;
 
   DashboardRepositoryImpl({
     FirebaseFirestore? firestore,
     firebase_auth.FirebaseAuth? auth,
-    required LocalStorageService localStorage,
   }) : _firestore = firestore ?? FirebaseFirestore.instance,
-       _auth = auth ?? firebase_auth.FirebaseAuth.instance,
-       _localStorage = localStorage;
+       _auth = auth ?? firebase_auth.FirebaseAuth.instance;
 
   @override
   Future<DashboardSummary> getDashboardSummary() async {
@@ -62,7 +57,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
 
       final transactions = transactionsSnapshot.docs.map((doc) {
         final data = doc.data();
-        return app.Transaction.fromJson({
+        return Transaction.fromJson({
           ...data,
           'id': doc.id,
           'date': (data['date'] as Timestamp).toDate().toIso8601String(),
@@ -73,7 +68,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
       }).toList();
 
       // Group transactions by currency
-      final currencyGroups = <String, List<app.Transaction>>{};
+      final currencyGroups = <String, List<Transaction>>{};
       for (final transaction in transactions) {
         final currency = transaction.currency;
         currencyGroups.putIfAbsent(currency, () => []).add(transaction);
@@ -90,7 +85,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
         Map<String, double> categoryTotals = {};
 
         for (final transaction in currencyTransactions) {
-          if (transaction.type == app.TransactionType.income) {
+          if (transaction.type == TransactionType.income) {
             totalIncome += transaction.amount;
           } else {
             totalExpenses += transaction.amount;
@@ -137,7 +132,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
         double totalExpenses = 0;
 
         for (final transaction in currencyTransactions) {
-          if (transaction.type == app.TransactionType.expense &&
+          if (transaction.type == TransactionType.expense &&
               transaction.categoryId != null) {
             categoryTotals[transaction.categoryId!] =
                 (categoryTotals[transaction.categoryId!] ?? 0) +

@@ -243,7 +243,9 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
                     value: percentage / 100,
-                    backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
+                    backgroundColor: theme.colorScheme.primary.withValues(
+                      alpha: .1,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -353,8 +355,9 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
                         const SizedBox(height: 8),
                         LinearProgressIndicator(
                           value: percentage / 100,
-                          backgroundColor: theme.colorScheme.primary
-                              .withOpacity(0.1),
+                          backgroundColor: theme.colorScheme.primary.withValues(
+                            alpha: .1,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -370,7 +373,7 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
                   ),
                 ),
               );
-            }).toList(),
+            }),
             const SizedBox(height: 16),
           ],
         );

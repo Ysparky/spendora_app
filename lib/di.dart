@@ -133,7 +133,7 @@ void _initializeOnboarding() {
 void _initializeDashboard() {
   // Repositories
   sl.registerLazySingleton<DashboardRepository>(
-    () => DashboardRepositoryImpl(localStorage: sl()),
+    () => DashboardRepositoryImpl(),
   );
 
   // ViewModels
