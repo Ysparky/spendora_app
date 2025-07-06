@@ -305,7 +305,7 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get language;
 
-  /// Label for currency selection
+  /// Label for currency field
   ///
   /// In en, this message translates to:
   /// **'Currency'**
@@ -478,6 +478,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View All'**
   String get viewAll;
+
+  /// Title for the transactions list screen
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get transactions;
+
+  /// Title for transactions filtered by category
+  ///
+  /// In en, this message translates to:
+  /// **'Category Transactions'**
+  String get categoryTransactions;
+
+  /// Tooltip for resetting date filter to last 30 days
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to Last 30 Days'**
+  String get resetToLast30Days;
+
+  /// Title for transaction filter dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Transactions'**
+  String get filterTransactions;
+
+  /// Label for showing all transactions
+  ///
+  /// In en, this message translates to:
+  /// **'All Transactions'**
+  String get allTransactions;
+
+  /// Label for showing recurring transactions
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring Transactions'**
+  String get recurringTransactions;
+
+  /// Message shown when no transactions are available
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions found'**
+  String get noTransactionsFound;
+
+  /// Title for edit transaction screen
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Transaction'**
+  String get editTransaction;
+
+  /// Title for transaction details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Details'**
+  String get transactionDetails;
+
+  /// Title for delete confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Transaction?'**
+  String get confirmDelete;
+
+  /// Message for delete confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this transaction? This action cannot be undone.'**
+  String get confirmDeleteMessage;
+
+  /// Label for date picker button
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date'**
+  String get selectDate;
+
+  /// Label for category picker button
+  ///
+  /// In en, this message translates to:
+  /// **'Select Category'**
+  String get selectCategory;
+
+  /// Validation message for required fields
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get required;
+
+  /// Validation message for invalid amount
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid amount'**
+  String get invalidAmount;
+
+  /// Error message shown when transaction creation fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create transaction'**
+  String get errorCreatingTransaction;
+
+  /// Error message shown when loading categories fails
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading categories: {error}'**
+  String errorLoadingCategories(String error);
+
+  /// Error message shown when loading a transaction fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load transaction'**
+  String get errorLoadingTransaction;
+
+  /// Error message shown when updating a transaction fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update transaction'**
+  String get errorUpdatingTransaction;
+
+  /// Error message shown when deleting a transaction fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete transaction'**
+  String get errorDeletingTransaction;
+
+  /// Message shown when a transaction cannot be found
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction not found'**
+  String get transactionNotFound;
+
+  /// Label for transaction tags
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get tags;
+
+  /// Label for recurring transaction
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring'**
+  String get recurring;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

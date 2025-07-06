@@ -147,7 +147,7 @@
     },
     "currency": "Currency",
     "@currency": {
-        "description": "Label for currency selection"
+        "description": "Label for currency field"
     },
     "theme": "Theme",
     "@theme": {
@@ -273,5 +273,104 @@
     "viewAll": "View All",
     "@viewAll": {
         "description": "Label for view all button"
+    },
+
+    "transactions": "Transactions",
+    "@transactions": {
+        "description": "Title for the transactions list screen"
+    },
+    "categoryTransactions": "Category Transactions",
+    "@categoryTransactions": {
+        "description": "Title for transactions filtered by category"
+    },
+    "resetToLast30Days": "Reset to Last 30 Days",
+    "@resetToLast30Days": {
+        "description": "Tooltip for resetting date filter to last 30 days"
+    },
+    "filterTransactions": "Filter Transactions",
+    "@filterTransactions": {
+        "description": "Title for transaction filter dialog"
+    },
+    "allTransactions": "All Transactions",
+    "@allTransactions": {
+        "description": "Label for showing all transactions"
+    },
+    "recurringTransactions": "Recurring Transactions",
+    "@recurringTransactions": {
+        "description": "Label for showing recurring transactions"
+    },
+    "noTransactionsFound": "No transactions found",
+    "@noTransactionsFound": {
+        "description": "Message shown when no transactions are available"
+    },
+    "editTransaction": "Edit Transaction",
+    "@editTransaction": {
+        "description": "Title for edit transaction screen"
+    },
+    "transactionDetails": "Transaction Details",
+    "@transactionDetails": {
+        "description": "Title for transaction details screen"
+    },
+    "confirmDelete": "Delete Transaction?",
+    "@confirmDelete": {
+        "description": "Title for delete confirmation dialog"
+    },
+    "confirmDeleteMessage": "Are you sure you want to delete this transaction? This action cannot be undone.",
+    "@confirmDeleteMessage": {
+        "description": "Message for delete confirmation dialog"
+    },
+    "selectDate": "Select Date",
+    "@selectDate": {
+        "description": "Label for date picker button"
+    },
+    "selectCategory": "Select Category",
+    "@selectCategory": {
+        "description": "Label for category picker button"
+    },
+    "required": "This field is required",
+    "@required": {
+        "description": "Validation message for required fields"
+    },
+    "invalidAmount": "Please enter a valid amount",
+    "@invalidAmount": {
+        "description": "Validation message for invalid amount"
+    },
+    "errorCreatingTransaction": "Failed to create transaction",
+    "@errorCreatingTransaction": {
+        "description": "Error message shown when transaction creation fails"
+    },
+    "errorLoadingCategories": "Error loading categories: {error}",
+    "@errorLoadingCategories": {
+        "description": "Error message shown when loading categories fails",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Network error"
+            }
+        }
+    },
+    "errorLoadingTransaction": "Failed to load transaction",
+    "@errorLoadingTransaction": {
+        "description": "Error message shown when loading a transaction fails"
+    },
+    "errorUpdatingTransaction": "Failed to update transaction",
+    "@errorUpdatingTransaction": {
+        "description": "Error message shown when updating a transaction fails"
+    },
+    "errorDeletingTransaction": "Failed to delete transaction",
+    "@errorDeletingTransaction": {
+        "description": "Error message shown when deleting a transaction fails"
+    },
+    "transactionNotFound": "Transaction not found",
+    "@transactionNotFound": {
+        "description": "Message shown when a transaction cannot be found"
+    },
+    "tags": "Tags",
+    "@tags": {
+        "description": "Label for transaction tags"
+    },
+    "recurring": "Recurring",
+    "@recurring": {
+        "description": "Label for recurring transaction"
     }
 } 

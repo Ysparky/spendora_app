@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:spendora_app/core/theme/app_theme.dart';
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
+import 'package:spendora_app/l10n/app_localizations.dart';
 
 class TransactionListScreen extends StatefulWidget {
   final String? categoryId;
@@ -83,10 +84,14 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.categoryId != null ? 'Category Transactions' : 'Transactions',
+          widget.categoryId != null
+              ? l10n.categoryTransactions
+              : l10n.transactions,
         ),
         actions: [
           IconButton(
@@ -98,7 +103,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Reset to Last 30 Days',
+            tooltip: l10n.resetToLast30Days,
             onPressed: () =>
                 _resetDateRange(context.read<TransactionViewModel>()),
           ),
@@ -124,7 +129,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _refreshTransactions,
-                    child: const Text('Retry'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -133,7 +138,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
 
           final transactions = viewModel.transactions;
           if (transactions == null || transactions.isEmpty) {
-            return const Center(child: Text('No transactions found'));
+            return Center(child: Text(l10n.noTransactionsFound));
           }
 
           return RefreshIndicator(
@@ -160,17 +165,19 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
   }
 
   Future<void> _showFilterDialog(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final viewModel = context.read<TransactionViewModel>();
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Filter Transactions'),
+        title: Text(l10n.filterTransactions),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: const Icon(Icons.all_inclusive),
-              title: const Text('All Transactions'),
+              title: Text(l10n.allTransactions),
               onTap: () {
                 viewModel.loadTransactions();
                 context.pop();
@@ -178,7 +185,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.repeat),
-              title: const Text('Recurring Transactions'),
+              title: Text(l10n.recurringTransactions),
               onTap: () {
                 viewModel.loadRecurringTransactions();
                 context.pop();
@@ -202,13 +209,15 @@ class _TransactionListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final currencyFormat = NumberFormat.currency(symbol: transaction.currency);
-    final dateFormat = DateFormat('MMM d, y');
+    final dateFormat = DateFormat.yMMMd(
+      Localizations.localeOf(context).languageCode,
+    );
 
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: transaction.type == TransactionType.income
-            ? AppTheme.light(context).colorScheme.primary
-            : AppTheme.light(context).colorScheme.error,
+            ? theme.colorScheme.primary
+            : theme.colorScheme.error,
         child: Icon(
           transaction.type == TransactionType.income
               ? Icons.arrow_upward
@@ -222,8 +231,8 @@ class _TransactionListItem extends StatelessWidget {
         currencyFormat.format(transaction.amount),
         style: theme.textTheme.bodyLarge?.copyWith(
           color: transaction.type == TransactionType.income
-              ? AppTheme.light(context).colorScheme.primary
-              : AppTheme.light(context).colorScheme.error,
+              ? theme.colorScheme.primary
+              : theme.colorScheme.error,
           fontWeight: FontWeight.bold,
         ),
       ),

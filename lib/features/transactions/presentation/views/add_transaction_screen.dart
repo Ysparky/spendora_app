@@ -6,6 +6,7 @@ import 'package:spendora_app/features/auth/presentation/providers/auth_provider.
 import 'package:spendora_app/features/settings/presentation/viewmodels/settings_viewmodel.dart';
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
+import 'package:spendora_app/l10n/app_localizations.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   const AddTransactionScreen({super.key});
@@ -80,11 +81,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     final amount = double.tryParse(_amountController.text);
     if (amount == null) return;
 
+    final l10n = AppLocalizations.of(context)!;
+
     // Only validate category for expense transactions
     if (_type == TransactionType.expense && _selectedCategoryId == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Please select a category')));
+      ).showSnackBar(SnackBar(content: Text(l10n.selectCategory)));
       return;
     }
 
@@ -109,20 +112,23 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to create transaction')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.errorCreatingTransaction)));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('MMM d, y');
+    final l10n = AppLocalizations.of(context)!;
+    final dateFormat = DateFormat.yMMMd(
+      Localizations.localeOf(context).languageCode,
+    );
     final currencyFormat = NumberFormat.currency(symbol: _selectedCurrency);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Transaction')),
+      appBar: AppBar(title: Text(l10n.addTransaction)),
       body: Consumer<TransactionViewModel>(
         builder: (context, viewModel, child) {
           return Form(
@@ -134,16 +140,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   children: [
                     // Transaction Type
                     SegmentedButton<TransactionType>(
-                      segments: const [
+                      segments: [
                         ButtonSegment(
                           value: TransactionType.expense,
-                          label: Text('Expense'),
-                          icon: Icon(Icons.arrow_downward),
+                          label: Text(l10n.expense),
+                          icon: const Icon(Icons.arrow_downward),
                         ),
                         ButtonSegment(
                           value: TransactionType.income,
-                          label: Text('Income'),
-                          icon: Icon(Icons.arrow_upward),
+                          label: Text(l10n.income),
+                          icon: const Icon(Icons.arrow_upward),
                         ),
                       ],
                       selected: {_type},
@@ -168,7 +174,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           child: TextFormField(
                             controller: _amountController,
                             decoration: InputDecoration(
-                              labelText: 'Amount',
+                              labelText: l10n.amount,
                               prefixText: NumberFormat.currency(
                                 symbol: _selectedCurrency,
                                 decimalDigits: 0,
@@ -177,10 +183,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                             keyboardType: TextInputType.number,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter an amount';
+                                return l10n.required;
                               }
                               if (double.tryParse(value) == null) {
-                                return 'Please enter a valid number';
+                                return l10n.invalidAmount;
                               }
                               return null;
                             },
@@ -193,8 +199,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                             builder: (context, settingsViewModel, _) {
                               return DropdownButtonFormField<String>(
                                 value: _selectedCurrency,
-                                decoration: const InputDecoration(
-                                  labelText: 'Currency',
+                                decoration: InputDecoration(
+                                  labelText: l10n.currency,
                                 ),
                                 items: settingsViewModel.supportedCurrencies
                                     .map(
@@ -222,12 +228,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     // Description
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: const InputDecoration(
-                        labelText: 'Description',
-                      ),
+                      decoration: InputDecoration(labelText: l10n.description),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a description';
+                          return l10n.required;
                         }
                         return null;
                       },
@@ -240,7 +244,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                         const Center(child: CircularProgressIndicator())
                       else if (viewModel.error != null)
                         Text(
-                          'Error loading categories: ${viewModel.error}',
+                          l10n.errorLoadingCategories(viewModel.error!),
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.error,
                           ),
@@ -248,32 +252,25 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       else
                         DropdownButtonFormField<String>(
                           value: _selectedCategoryId,
-                          decoration: const InputDecoration(
-                            labelText: 'Category',
-                          ),
-                          items: viewModel.categories.map((category) {
-                            return DropdownMenuItem(
-                              value: category.id,
-                              child: Row(
-                                children: [
-                                  Text(category.icon),
-                                  const SizedBox(width: 8),
-                                  Text(category.name),
-                                ],
-                              ),
-                            );
-                          }).toList(),
+                          decoration: InputDecoration(labelText: l10n.category),
+                          items: viewModel.categories
+                              ?.map(
+                                (category) => DropdownMenuItem(
+                                  value: category.id,
+                                  child: Row(
+                                    children: [
+                                      Text(category.icon),
+                                      const SizedBox(width: 8),
+                                      Text(category.name),
+                                    ],
+                                  ),
+                                ),
+                              )
+                              .toList(),
                           onChanged: (value) {
                             setState(() {
                               _selectedCategoryId = value;
                             });
-                          },
-                          validator: (value) {
-                            if (_type == TransactionType.expense &&
-                                (value == null || value.isEmpty)) {
-                              return 'Please select a category';
-                            }
-                            return null;
                           },
                         ),
                     const SizedBox(height: 16),
@@ -364,24 +361,32 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     ],
                   ],
                 ),
-                if (viewModel.isLoading)
-                  Container(
-                    color: Colors.black26,
-                    child: const Center(child: CircularProgressIndicator()),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, -4),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: _submit,
+                      child: Text(l10n.save),
+                    ),
                   ),
+                ),
               ],
             ),
           );
         },
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: ElevatedButton(
-            onPressed: _submit,
-            child: const Text('Save Transaction'),
-          ),
-        ),
       ),
     );
   }

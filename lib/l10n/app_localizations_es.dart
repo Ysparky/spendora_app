@@ -84,10 +84,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsTab => 'Ajustes';
 
   @override
-  String get addTransaction => 'Añadir transacción';
+  String get addTransaction => 'Agregar Transacción';
 
   @override
-  String get amount => 'Cantidad';
+  String get amount => 'Monto';
 
   @override
   String get description => 'Descripción';
@@ -201,4 +201,75 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get viewAll => 'Ver todo';
+
+  @override
+  String get transactions => 'Transacciones';
+
+  @override
+  String get categoryTransactions => 'Transacciones por Categoría';
+
+  @override
+  String get resetToLast30Days => 'Últimos 30 días';
+
+  @override
+  String get filterTransactions => 'Filtrar Transacciones';
+
+  @override
+  String get allTransactions => 'Todas las Transacciones';
+
+  @override
+  String get recurringTransactions => 'Transacciones Recurrentes';
+
+  @override
+  String get noTransactionsFound => 'No se encontraron transacciones';
+
+  @override
+  String get editTransaction => 'Editar Transacción';
+
+  @override
+  String get transactionDetails => 'Detalles de la Transacción';
+
+  @override
+  String get confirmDelete => '¿Eliminar Transacción?';
+
+  @override
+  String get confirmDeleteMessage => '¿Estás seguro de que deseas eliminar esta transacción? Esta acción no se puede deshacer.';
+
+  @override
+  String get selectDate => 'Seleccionar Fecha';
+
+  @override
+  String get selectCategory => 'Seleccionar Categoría';
+
+  @override
+  String get required => 'Este campo es obligatorio';
+
+  @override
+  String get invalidAmount => 'Por favor ingresa un monto válido';
+
+  @override
+  String get errorCreatingTransaction => 'Error al crear la transacción';
+
+  @override
+  String errorLoadingCategories(String error) {
+    return 'Error al cargar las categorías: $error';
+  }
+
+  @override
+  String get errorLoadingTransaction => 'Error al cargar la transacción';
+
+  @override
+  String get errorUpdatingTransaction => 'Error al actualizar la transacción';
+
+  @override
+  String get errorDeletingTransaction => 'Error al eliminar la transacción';
+
+  @override
+  String get transactionNotFound => 'Transacción no encontrada';
+
+  @override
+  String get tags => 'Etiquetas';
+
+  @override
+  String get recurring => 'Recurrente';
 }

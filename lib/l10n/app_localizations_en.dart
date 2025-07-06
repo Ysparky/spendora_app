@@ -201,4 +201,75 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewAll => 'View All';
+
+  @override
+  String get transactions => 'Transactions';
+
+  @override
+  String get categoryTransactions => 'Category Transactions';
+
+  @override
+  String get resetToLast30Days => 'Reset to Last 30 Days';
+
+  @override
+  String get filterTransactions => 'Filter Transactions';
+
+  @override
+  String get allTransactions => 'All Transactions';
+
+  @override
+  String get recurringTransactions => 'Recurring Transactions';
+
+  @override
+  String get noTransactionsFound => 'No transactions found';
+
+  @override
+  String get editTransaction => 'Edit Transaction';
+
+  @override
+  String get transactionDetails => 'Transaction Details';
+
+  @override
+  String get confirmDelete => 'Delete Transaction?';
+
+  @override
+  String get confirmDeleteMessage => 'Are you sure you want to delete this transaction? This action cannot be undone.';
+
+  @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get selectCategory => 'Select Category';
+
+  @override
+  String get required => 'This field is required';
+
+  @override
+  String get invalidAmount => 'Please enter a valid amount';
+
+  @override
+  String get errorCreatingTransaction => 'Failed to create transaction';
+
+  @override
+  String errorLoadingCategories(String error) {
+    return 'Error loading categories: $error';
+  }
+
+  @override
+  String get errorLoadingTransaction => 'Failed to load transaction';
+
+  @override
+  String get errorUpdatingTransaction => 'Failed to update transaction';
+
+  @override
+  String get errorDeletingTransaction => 'Failed to delete transaction';
+
+  @override
+  String get transactionNotFound => 'Transaction not found';
+
+  @override
+  String get tags => 'Tags';
+
+  @override
+  String get recurring => 'Recurring';
 }

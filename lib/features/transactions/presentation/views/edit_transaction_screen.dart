@@ -6,6 +6,7 @@ import 'package:spendora_app/features/settings/presentation/viewmodels/settings_
 import 'package:spendora_app/features/transactions/domain/models/category.dart';
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
+import 'package:spendora_app/l10n/app_localizations.dart';
 
 class EditTransactionScreen extends StatefulWidget {
   final String transactionId;
@@ -79,7 +80,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Failed to load transaction';
+          _error = AppLocalizations.of(context)!.errorLoadingTransaction;
           _isLoading = false;
         });
       }
@@ -122,17 +123,19 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
     final amount = double.tryParse(_amountController.text);
     if (amount == null) return;
 
+    final l10n = AppLocalizations.of(context)!;
+
     if (_selectedCategoryId == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Please select a category')));
+      ).showSnackBar(SnackBar(content: Text(l10n.selectCategory)));
       return;
     }
 
     if (_transaction == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Transaction not found')));
+      ).showSnackBar(SnackBar(content: Text(l10n.transactionNotFound)));
       return;
     }
 
@@ -159,29 +162,32 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to update transaction')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.errorUpdatingTransaction)));
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final dateFormat = DateFormat('MMM d, y');
+    final dateFormat = DateFormat.yMMMd(
+      Localizations.localeOf(context).languageCode,
+    );
     final currencyFormat = NumberFormat.currency(symbol: _selectedCurrency);
 
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Edit Transaction')),
+        appBar: AppBar(title: Text(l10n.editTransaction)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_error != null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Edit Transaction')),
+        appBar: AppBar(title: Text(l10n.editTransaction)),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -190,7 +196,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _loadTransaction,
-                child: const Text('Retry'),
+                child: Text(l10n.retry),
               ),
             ],
           ),
@@ -200,13 +206,13 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
 
     if (_transaction == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Edit Transaction')),
-        body: const Center(child: Text('Transaction not found')),
+        appBar: AppBar(title: Text(l10n.editTransaction)),
+        body: Center(child: Text(l10n.transactionNotFound)),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Transaction')),
+      appBar: AppBar(title: Text(l10n.editTransaction)),
       body: Consumer<TransactionViewModel>(
         builder: (context, viewModel, child) {
           return Form(
@@ -218,16 +224,16 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                   children: [
                     // Transaction Type
                     SegmentedButton<TransactionType>(
-                      segments: const [
+                      segments: [
                         ButtonSegment(
                           value: TransactionType.expense,
-                          label: Text('Expense'),
-                          icon: Icon(Icons.arrow_downward),
+                          label: Text(l10n.expense),
+                          icon: const Icon(Icons.arrow_downward),
                         ),
                         ButtonSegment(
                           value: TransactionType.income,
-                          label: Text('Income'),
-                          icon: Icon(Icons.arrow_upward),
+                          label: Text(l10n.income),
+                          icon: const Icon(Icons.arrow_upward),
                         ),
                       ],
                       selected: {_type},
@@ -248,7 +254,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                           child: TextFormField(
                             controller: _amountController,
                             decoration: InputDecoration(
-                              labelText: 'Amount',
+                              labelText: l10n.amount,
                               prefixText: NumberFormat.currency(
                                 symbol: _selectedCurrency,
                                 decimalDigits: 0,
@@ -257,10 +263,10 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                             keyboardType: TextInputType.number,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter an amount';
+                                return l10n.required;
                               }
                               if (double.tryParse(value) == null) {
-                                return 'Please enter a valid number';
+                                return l10n.invalidAmount;
                               }
                               return null;
                             },
@@ -273,8 +279,8 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                             builder: (context, settingsViewModel, _) {
                               return DropdownButtonFormField<String>(
                                 value: _selectedCurrency,
-                                decoration: const InputDecoration(
-                                  labelText: 'Currency',
+                                decoration: InputDecoration(
+                                  labelText: l10n.currency,
                                 ),
                                 items: settingsViewModel.supportedCurrencies
                                     .map(
@@ -302,12 +308,10 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                     // Description
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: const InputDecoration(
-                        labelText: 'Description',
-                      ),
+                      decoration: InputDecoration(labelText: l10n.description),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a description';
+                          return l10n.required;
                         }
                         return null;
                       },
@@ -315,43 +319,40 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                     const SizedBox(height: 16),
 
                     // Category
-                    if (viewModel.isCategoriesLoading)
-                      const Center(child: CircularProgressIndicator())
-                    else if (viewModel.error != null)
-                      Text(
-                        'Error loading categories: ${viewModel.error}',
-                        style: TextStyle(color: theme.colorScheme.error),
-                      )
-                    else
-                      DropdownButtonFormField<String>(
-                        value: _selectedCategoryId,
-                        decoration: const InputDecoration(
-                          labelText: 'Category',
+                    if (_type == TransactionType.expense)
+                      if (viewModel.isCategoriesLoading)
+                        const Center(child: CircularProgressIndicator())
+                      else if (viewModel.error != null)
+                        Text(
+                          l10n.errorLoadingCategories(viewModel.error!),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        )
+                      else
+                        DropdownButtonFormField<String>(
+                          value: _selectedCategoryId,
+                          decoration: InputDecoration(labelText: l10n.category),
+                          items: viewModel.categories
+                              ?.map(
+                                (category) => DropdownMenuItem(
+                                  value: category.id,
+                                  child: Row(
+                                    children: [
+                                      Text(category.icon),
+                                      const SizedBox(width: 8),
+                                      Text(category.name),
+                                    ],
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedCategoryId = value;
+                            });
+                          },
                         ),
-                        items: viewModel.categories.map((category) {
-                          return DropdownMenuItem(
-                            value: category.id,
-                            child: Row(
-                              children: [
-                                Text(category.icon),
-                                const SizedBox(width: 8),
-                                Text(category.name),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedCategoryId = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please select a category';
-                          }
-                          return null;
-                        },
-                      ),
                     const SizedBox(height: 16),
 
                     // Date
@@ -441,25 +442,84 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                     ],
                   ],
                 ),
-                if (viewModel.isLoading)
-                  Container(
-                    color: Colors.black26,
-                    child: const Center(child: CircularProgressIndicator()),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, -4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => _showDeleteConfirmation(context),
+                            child: Text(l10n.delete),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: _submit,
+                            child: Text(l10n.save),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                ),
               ],
             ),
           );
         },
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: ElevatedButton(
-            onPressed: _submit,
-            child: const Text('Update Transaction'),
+    );
+  }
+
+  Future<void> _showDeleteConfirmation(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.confirmDelete),
+        content: Text(l10n.confirmDeleteMessage),
+        actions: [
+          TextButton(
+            onPressed: () => context.pop(false),
+            child: Text(l10n.cancel),
           ),
-        ),
+          TextButton(
+            onPressed: () => context.pop(true),
+            child: Text(l10n.delete),
+          ),
+        ],
       ),
     );
+
+    if (confirmed == true && mounted) {
+      try {
+        await context.read<TransactionViewModel>().deleteTransaction(
+          widget.transactionId,
+        );
+        if (mounted) {
+          context.pop(true); // Pop with refresh flag
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.errorDeletingTransaction)),
+          );
+        }
+      }
+    }
   }
 }

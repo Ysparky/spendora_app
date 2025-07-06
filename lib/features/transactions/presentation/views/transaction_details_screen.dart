@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:spendora_app/features/transactions/domain/models/category.dart';
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
+import 'package:spendora_app/l10n/app_localizations.dart';
 
 class TransactionDetailsScreen extends StatefulWidget {
   final String transactionId;
@@ -47,7 +48,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Failed to load transaction details';
+          _error = AppLocalizations.of(context)!.errorLoadingTransaction;
           _isLoading = false;
         });
       }
@@ -55,24 +56,23 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
   }
 
   Future<void> _deleteTransaction() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Transaction'),
-        content: const Text(
-          'Are you sure you want to delete this transaction?',
-        ),
+        title: Text(l10n.confirmDelete),
+        content: Text(l10n.confirmDeleteMessage),
         actions: [
           TextButton(
             onPressed: () => context.pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => context.pop(true),
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -89,7 +89,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to delete transaction')),
+            SnackBar(content: Text(l10n.errorDeletingTransaction)),
           );
         }
       }
@@ -98,15 +98,18 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final currencyFormat = NumberFormat.currency(
       symbol: _transaction?.currency ?? 'USD',
     );
-    final dateFormat = DateFormat('MMM d, y');
+    final dateFormat = DateFormat.yMMMd(
+      Localizations.localeOf(context).languageCode,
+    );
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Transaction Details'),
+        title: Text(l10n.transactionDetails),
         actions: [
           if (_transaction != null) ...[
             IconButton(
@@ -138,13 +141,13 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _loadTransaction,
-                    child: const Text('Retry'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
             )
           : _transaction == null
-          ? const Center(child: Text('Transaction not found'))
+          ? Center(child: Text(l10n.transactionNotFound))
           : Consumer<TransactionViewModel>(
               builder: (context, viewModel, child) {
                 final category = viewModel.categories.firstWhere(
@@ -212,7 +215,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                             ),
                             const Divider(height: 32),
                             _DetailItem(
-                              label: 'Category',
+                              label: l10n.category,
                               child: Row(
                                 children: [
                                   Text(category.icon),
@@ -224,7 +227,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                             if (_transaction!.tags.isNotEmpty) ...[
                               const SizedBox(height: 16),
                               _DetailItem(
-                                label: 'Tags',
+                                label: l10n.tags,
                                 child: Wrap(
                                   spacing: 8,
                                   children: _transaction!.tags
@@ -237,7 +240,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                                 _transaction!.recurringType != null) ...[
                               const SizedBox(height: 16),
                               _DetailItem(
-                                label: 'Recurring',
+                                label: l10n.recurring,
                                 child: Text(
                                   _transaction!.recurringType
                                       .toString()
@@ -249,14 +252,18 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                             ],
                             const SizedBox(height: 16),
                             _DetailItem(
-                              label: 'Currency',
-                              child: Text(_transaction!.currency),
+                              label: l10n.date,
+                              child: Text(
+                                dateFormat.format(_transaction!.date),
+                              ),
                             ),
                             const SizedBox(height: 16),
                             _DetailItem(
-                              label: 'Created',
+                              label: l10n.type,
                               child: Text(
-                                dateFormat.format(_transaction!.createdAt),
+                                _transaction!.type == TransactionType.income
+                                    ? l10n.income
+                                    : l10n.expense,
                               ),
                             ),
                           ],
@@ -280,7 +287,6 @@ class _DetailItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -291,10 +297,7 @@ class _DetailItem extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        DefaultTextStyle(
-          style: theme.textTheme.bodyLarge ?? const TextStyle(),
-          child: child,
-        ),
+        child,
       ],
     );
   }
