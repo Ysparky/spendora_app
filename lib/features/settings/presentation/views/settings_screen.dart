@@ -13,13 +13,14 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(l10n.settings)),
       body: Consumer<SettingsViewModel>(
         builder: (context, viewModel, child) {
           final preferences = viewModel.preferences;
           if (preferences == null) {
-            return const Center(child: Text('No preferences found'));
+            return Center(child: Text(l10n.noPreferencesFound));
           }
 
           if (viewModel.error != null) {
@@ -34,7 +35,7 @@ class SettingsScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: viewModel.clearError,
-                    child: const Text('Retry'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -45,7 +46,7 @@ class SettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             children: [
               // Profile Section
-              const _SectionHeader(title: 'Profile'),
+              _SectionHeader(title: l10n.profile),
               Card(
                 child: Column(
                   children: [
@@ -64,7 +65,7 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Preferences Section
-              const _SectionHeader(title: 'Preferences'),
+              _SectionHeader(title: l10n.preferences),
               Card(
                 child: Column(
                   children: [
@@ -76,7 +77,7 @@ class SettingsScreen extends StatelessWidget {
                               ? Icons.dark_mode
                               : Icons.light_mode,
                         ),
-                        title: const Text('Dark Mode'),
+                        title: Text(l10n.darkMode),
                         value: storage.isDarkMode,
                         onChanged: (value) async {
                           await storage.setDarkMode(value);
@@ -88,7 +89,7 @@ class SettingsScreen extends StatelessWidget {
                     Consumer<LocaleProvider>(
                       builder: (context, localeProvider, _) => ListTile(
                         leading: const Icon(Icons.language),
-                        title: Text(AppLocalizations.of(context)!.language),
+                        title: Text(l10n.language),
                         subtitle: Text(
                           localeProvider.getLanguageName(
                             localeProvider.locale?.languageCode ?? 'en',
@@ -102,7 +103,7 @@ class SettingsScreen extends StatelessWidget {
                     // Currency
                     ListTile(
                       leading: const Icon(Icons.currency_exchange),
-                      title: const Text('Main Currency'),
+                      title: Text(l10n.mainCurrency),
                       subtitle: Text(preferences.currency),
                       trailing: viewModel.isLoading
                           ? const SizedBox(
@@ -120,12 +121,12 @@ class SettingsScreen extends StatelessWidget {
                     Consumer<LocalStorageService>(
                       builder: (context, storage, _) => ListTile(
                         leading: const Icon(Icons.view_agenda),
-                        title: const Text('Currency Display'),
+                        title: Text(l10n.currencyDisplay),
                         subtitle: Text(
                           storage.currencyDisplayMode ==
                                   CurrencyDisplayMode.unified
-                              ? 'Convert all to ${preferences.currency}'
-                              : 'Group by currency',
+                              ? l10n.convertAllTo(preferences.currency)
+                              : l10n.groupByCurrency,
                         ),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => _showCurrencyDisplayModePicker(context),
@@ -137,14 +138,14 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Data Management Section
-              const _SectionHeader(title: 'Data Management'),
+              _SectionHeader(title: l10n.dataManagement),
               Card(
                 child: Column(
                   children: [
                     // Categories
                     ListTile(
                       leading: const Icon(Icons.category_outlined),
-                      title: const Text('Manage Categories'),
+                      title: Text(l10n.manageCategories),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {}, // TODO: Navigate to categories management
                     ),
@@ -152,7 +153,7 @@ class SettingsScreen extends StatelessWidget {
                     // Tags
                     ListTile(
                       leading: const Icon(Icons.tag),
-                      title: const Text('Manage Tags'),
+                      title: Text(l10n.manageTags),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {}, // TODO: Navigate to tags management
                     ),
@@ -162,13 +163,13 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Account Section
-              const _SectionHeader(title: 'Account'),
+              _SectionHeader(title: l10n.account),
               Card(
                 child: Column(
                   children: [
                     ListTile(
                       leading: const Icon(Icons.logout),
-                      title: const Text('Sign Out'),
+                      title: Text(l10n.signOut),
                       onTap: () => _handleSignOut(context),
                     ),
                     Theme(
@@ -179,12 +180,12 @@ class SettingsScreen extends StatelessWidget {
                         ),
                       ),
                       child: ExpansionTile(
-                        title: const Text('Advanced'),
+                        title: Text(l10n.advanced),
                         leading: const Icon(Icons.warning_outlined),
                         children: [
                           ListTile(
                             leading: const Icon(Icons.delete_forever),
-                            title: const Text('Delete Account'),
+                            title: Text(l10n.deleteAccount),
                             onTap: () => _showDeleteAccountDialog(context),
                           ),
                         ],
@@ -238,6 +239,7 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showCurrencyDisplayModePicker(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final storage = context.read<LocalStorageService>();
     final currentMode = storage.currencyDisplayMode;
     final userCurrency =
@@ -248,8 +250,7 @@ class SettingsScreen extends StatelessWidget {
       builder: (context) => ListView(
         children: [
           ListTile(
-            title: const Text('Convert all to main currency'),
-            subtitle: Text('All amounts will be shown in $userCurrency'),
+            title: Text(l10n.convertAllTo(userCurrency)),
             trailing: currentMode == CurrencyDisplayMode.unified
                 ? const Icon(Icons.check, color: Colors.green)
                 : null,
@@ -259,8 +260,7 @@ class SettingsScreen extends StatelessWidget {
             },
           ),
           ListTile(
-            title: const Text('Group by currency'),
-            subtitle: const Text('Show separate totals for each currency'),
+            title: Text(l10n.groupByCurrency),
             trailing: currentMode == CurrencyDisplayMode.grouped
                 ? const Icon(Icons.check, color: Colors.green)
                 : null,
@@ -399,7 +399,8 @@ class _EditProfileDialog extends StatefulWidget {
 }
 
 class _EditProfileDialogState extends State<_EditProfileDialog> {
-  late final TextEditingController _nameController;
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
   bool _isLoading = false;
 
   @override
@@ -408,49 +409,48 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
     _nameController = TextEditingController(
       text: widget.authProvider.user?.name,
     );
+    _emailController = TextEditingController(
+      text: widget.authProvider.user?.email,
+    );
   }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _emailController.dispose();
     super.dispose();
-  }
-
-  Future<void> _handleSave() async {
-    if (_isLoading) return;
-
-    setState(() => _isLoading = true);
-    try {
-      await widget.authProvider.updateProfile(_nameController.text.trim());
-      if (mounted) {
-        context.pop();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
-        setState(() => _isLoading = false);
-      }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Edit Profile'),
-      content: TextField(
-        controller: _nameController,
-        decoration: const InputDecoration(
-          labelText: 'Name',
-          border: OutlineInputBorder(),
-        ),
-        enabled: !_isLoading,
+      title: Text(l10n.editProfile),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _nameController,
+            decoration: InputDecoration(
+              labelText: l10n.name,
+              enabled: !_isLoading,
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _emailController,
+            decoration: InputDecoration(
+              labelText: l10n.email,
+              enabled: !_isLoading,
+            ),
+            keyboardType: TextInputType.emailAddress,
+          ),
+        ],
       ),
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => context.pop(),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
         FilledButton(
           onPressed: _isLoading ? null : _handleSave,
@@ -458,14 +458,30 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
               ? const SizedBox(
                   height: 20,
                   width: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Save'),
+              : Text(l10n.save),
         ),
       ],
     );
+  }
+
+  Future<void> _handleSave() async {
+    setState(() => _isLoading = true);
+
+    try {
+      // TODO: Implement profile update
+      context.pop();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 }

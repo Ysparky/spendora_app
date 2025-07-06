@@ -288,4 +288,60 @@ class AppLocalizationsEs extends AppLocalizations {
   String conversionDetails(String details) {
     return 'Convertido de: $details';
   }
+
+  @override
+  String get noPreferencesFound => 'No se encontraron preferencias';
+
+  @override
+  String get profile => 'Perfil';
+
+  @override
+  String get preferences => 'Preferencias';
+
+  @override
+  String get darkMode => 'Modo oscuro';
+
+  @override
+  String get mainCurrency => 'Moneda principal';
+
+  @override
+  String get currencyDisplay => 'Visualización de moneda';
+
+  @override
+  String convertAllTo(String currency) {
+    return 'Convertir todo a $currency';
+  }
+
+  @override
+  String get groupByCurrency => 'Agrupar por moneda';
+
+  @override
+  String get dataManagement => 'Gestión de datos';
+
+  @override
+  String get manageCategories => 'Gestionar categorías';
+
+  @override
+  String get manageTags => 'Gestionar etiquetas';
+
+  @override
+  String get account => 'Cuenta';
+
+  @override
+  String get signOut => 'Cerrar sesión';
+
+  @override
+  String get advanced => 'Avanzado';
+
+  @override
+  String get deleteAccount => 'Eliminar cuenta';
+
+  @override
+  String get editProfile => 'Editar perfil';
+
+  @override
+  String get name => 'Nombre';
+
+  @override
+  String get email => 'Correo electrónico';
 }

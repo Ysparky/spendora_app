@@ -139,7 +139,7 @@
 
     "settings": "Settings",
     "@settings": {
-        "description": "Title for settings screen"
+        "description": "Title for the settings screen"
     },
     "language": "Language",
     "@language": {
@@ -400,5 +400,83 @@
                 "example": "100 USD + 200 EUR"
             }
         }
+    },
+    "noPreferencesFound": "No preferences found",
+    "@noPreferencesFound": {
+        "description": "Message shown when no user preferences are found"
+    },
+    "profile": "Profile",
+    "@profile": {
+        "description": "Title for profile section"
+    },
+    "preferences": "Preferences",
+    "@preferences": {
+        "description": "Title for preferences section"
+    },
+    "darkMode": "Dark Mode",
+    "@darkMode": {
+        "description": "Label for dark mode toggle"
+    },
+    "mainCurrency": "Main Currency",
+    "@mainCurrency": {
+        "description": "Label for main currency selection"
+    },
+    "currencyDisplay": "Currency Display",
+    "@currencyDisplay": {
+        "description": "Label for currency display mode"
+    },
+    "convertAllTo": "Convert all to {currency}",
+    "@convertAllTo": {
+        "description": "Label for unified currency display mode",
+        "placeholders": {
+            "currency": {
+                "type": "String",
+                "example": "USD"
+            }
+        }
+    },
+    "groupByCurrency": "Group by currency",
+    "@groupByCurrency": {
+        "description": "Label for grouped currency display mode"
+    },
+    "dataManagement": "Data Management",
+    "@dataManagement": {
+        "description": "Title for data management section"
+    },
+    "manageCategories": "Manage Categories",
+    "@manageCategories": {
+        "description": "Label for categories management"
+    },
+    "manageTags": "Manage Tags",
+    "@manageTags": {
+        "description": "Label for tags management"
+    },
+    "account": "Account",
+    "@account": {
+        "description": "Title for account section"
+    },
+    "signOut": "Sign Out",
+    "@signOut": {
+        "description": "Label for sign out button"
+    },
+    "advanced": "Advanced",
+    "@advanced": {
+        "description": "Label for advanced settings"
+    },
+    "deleteAccount": "Delete Account",
+    "@deleteAccount": {
+        "description": "Label for delete account button"
+    },
+    "editProfile": "Edit Profile",
+    "@editProfile": {
+        "description": "Title for edit profile dialog"
+    },
+    "name": "Name",
+    "@name": {
+        "description": "Label for name field"
+    },
+    "email": "Email",
+    "@email": {
+        "description": "Label for email field"
     }
 } 

@@ -293,7 +293,7 @@ abstract class AppLocalizations {
   /// **'Expense'**
   String get expense;
 
-  /// Title for settings screen
+  /// Title for the settings screen
   ///
   /// In en, this message translates to:
   /// **'Settings'**
@@ -640,6 +640,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Converted from: {details}'**
   String conversionDetails(String details);
+
+  /// Message shown when no user preferences are found
+  ///
+  /// In en, this message translates to:
+  /// **'No preferences found'**
+  String get noPreferencesFound;
+
+  /// Title for profile section
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// Title for preferences section
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get preferences;
+
+  /// Label for dark mode toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkMode;
+
+  /// Label for main currency selection
+  ///
+  /// In en, this message translates to:
+  /// **'Main Currency'**
+  String get mainCurrency;
+
+  /// Label for currency display mode
+  ///
+  /// In en, this message translates to:
+  /// **'Currency Display'**
+  String get currencyDisplay;
+
+  /// Label for unified currency display mode
+  ///
+  /// In en, this message translates to:
+  /// **'Convert all to {currency}'**
+  String convertAllTo(String currency);
+
+  /// Label for grouped currency display mode
+  ///
+  /// In en, this message translates to:
+  /// **'Group by currency'**
+  String get groupByCurrency;
+
+  /// Title for data management section
+  ///
+  /// In en, this message translates to:
+  /// **'Data Management'**
+  String get dataManagement;
+
+  /// Label for categories management
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Categories'**
+  String get manageCategories;
+
+  /// Label for tags management
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Tags'**
+  String get manageTags;
+
+  /// Title for account section
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// Label for sign out button
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get signOut;
+
+  /// Label for advanced settings
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get advanced;
+
+  /// Label for delete account button
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// Title for edit profile dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
+  /// Label for name field
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// Label for email field
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
