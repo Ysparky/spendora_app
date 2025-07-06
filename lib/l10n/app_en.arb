@@ -372,5 +372,33 @@
     "recurring": "Recurring",
     "@recurring": {
         "description": "Label for recurring transaction"
+    },
+    "categories": "Categories",
+    "@categories": {
+        "description": "Title for the categories overview screen"
+    },
+    "noCategoriesFound": "No categories found",
+    "@noCategoriesFound": {
+        "description": "Message shown when no categories are available"
+    },
+    "percentageOfTotalExpenses": "{percentage}% of total expenses",
+    "@percentageOfTotalExpenses": {
+        "description": "Label showing category percentage of total expenses",
+        "placeholders": {
+            "percentage": {
+                "type": "String",
+                "example": "25.5"
+            }
+        }
+    },
+    "conversionDetails": "Converted from: {details}",
+    "@conversionDetails": {
+        "description": "Label showing currency conversion details",
+        "placeholders": {
+            "details": {
+                "type": "String",
+                "example": "100 USD + 200 EUR"
+            }
+        }
     }
 } 

@@ -8,6 +8,7 @@ import 'package:spendora_app/core/utils/currency_utils.dart';
 import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:spendora_app/features/transactions/domain/models/category.dart';
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
+import 'package:spendora_app/l10n/app_localizations.dart';
 
 class CategoriesOverviewScreen extends StatefulWidget {
   const CategoriesOverviewScreen({super.key});
@@ -102,8 +103,11 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
         });
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
+            final l10n = AppLocalizations.of(context)!;
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error calculating conversion: $e')),
+              SnackBar(
+                content: Text(l10n.errorCalculatingConversion(e.toString())),
+              ),
             );
           }
         });
@@ -129,6 +133,7 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final storage = context.watch<LocalStorageService>();
     final isUnifiedView =
@@ -137,7 +142,7 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
         context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Categories')),
+      appBar: AppBar(title: Text(l10n.categories)),
       body: RefreshIndicator(
         onRefresh: _refreshData,
         child: Consumer<TransactionViewModel>(
@@ -155,7 +160,7 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _refreshData,
-                      child: const Text('Retry'),
+                      child: Text(l10n.retry),
                     ),
                   ],
                 ),
@@ -164,7 +169,7 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
 
             final categories = viewModel.categories;
             if (categories.isEmpty) {
-              return const Center(child: Text('No categories found'));
+              return Center(child: Text(l10n.noCategoriesFound));
             }
 
             if (_isLoading) {
@@ -193,6 +198,7 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
     String currency,
     TransactionViewModel viewModel,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: categories.length,
@@ -241,7 +247,9 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${percentage.toStringAsFixed(1)}% of total expenses',
+                    l10n.percentageOfTotalExpenses(
+                      percentage.toStringAsFixed(1),
+                    ),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -250,7 +258,7 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        convertedData.$2,
+                        l10n.conversionDetails(convertedData.$2),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -270,20 +278,21 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
     List<Category> categories,
     TransactionViewModel viewModel,
   ) {
-    // Group categories by currency
+    final l10n = AppLocalizations.of(context)!;
     final groupedCategories = <String, List<(Category, double, double)>>{};
 
+    // Group categories by currency
     for (final category in categories) {
       final amounts = viewModel.getCategoryAmountsByCurrency(category.id);
       for (final entry in amounts.entries) {
         final currency = entry.key;
         final amount = entry.value;
-        final percentage = viewModel.getCategoryPercentage(category.id);
-        groupedCategories.putIfAbsent(currency, () => []).add((
-          category,
-          amount,
-          percentage,
-        ));
+        final percentage = viewModel.getCategoryPercentageByCurrency(
+          category.id,
+          currency,
+        );
+        groupedCategories.putIfAbsent(currency, () => []);
+        groupedCategories[currency]!.add((category, amount, percentage));
       }
     }
 
@@ -293,19 +302,20 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
       itemBuilder: (context, index) {
         final currency = groupedCategories.keys.elementAt(index);
         final categories = groupedCategories[currency]!;
+        final currencyFormat = NumberFormat.currency(
+          symbol: CurrencyUtils.getCurrencySymbol(currency),
+        );
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                currency,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+            Text(
+              currency,
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: theme.colorScheme.primary,
               ),
             ),
+            const SizedBox(height: 8),
             ...categories.map((data) {
               final (category, amount, percentage) = data;
               return Card(
@@ -333,11 +343,7 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
                               ),
                             ),
                             Text(
-                              NumberFormat.currency(
-                                symbol: CurrencyUtils.getCurrencySymbol(
-                                  currency,
-                                ),
-                              ).format(amount),
+                              currencyFormat.format(amount),
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -352,7 +358,9 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${percentage.toStringAsFixed(1)}% of total expenses',
+                          l10n.percentageOfTotalExpenses(
+                            percentage.toStringAsFixed(1),
+                          ),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
@@ -362,7 +370,8 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
                   ),
                 ),
               );
-            }),
+            }).toList(),
+            const SizedBox(height: 16),
           ],
         );
       },

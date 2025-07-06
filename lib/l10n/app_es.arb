@@ -105,5 +105,9 @@
     "errorDeletingTransaction": "Error al eliminar la transacción",
     "transactionNotFound": "Transacción no encontrada",
     "tags": "Etiquetas",
-    "recurring": "Recurrente"
+    "recurring": "Recurrente",
+    "categories": "Categorías",
+    "noCategoriesFound": "No se encontraron categorías",
+    "percentageOfTotalExpenses": "{percentage}% del total de gastos",
+    "conversionDetails": "Convertido de: {details}"
 } 

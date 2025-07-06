@@ -272,4 +272,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recurring => 'Recurring';
+
+  @override
+  String get categories => 'Categories';
+
+  @override
+  String get noCategoriesFound => 'No categories found';
+
+  @override
+  String percentageOfTotalExpenses(String percentage) {
+    return '$percentage% of total expenses';
+  }
+
+  @override
+  String conversionDetails(String details) {
+    return 'Converted from: $details';
+  }
 }

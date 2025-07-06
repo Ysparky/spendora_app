@@ -616,6 +616,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recurring'**
   String get recurring;
+
+  /// Title for the categories overview screen
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get categories;
+
+  /// Message shown when no categories are available
+  ///
+  /// In en, this message translates to:
+  /// **'No categories found'**
+  String get noCategoriesFound;
+
+  /// Label showing category percentage of total expenses
+  ///
+  /// In en, this message translates to:
+  /// **'{percentage}% of total expenses'**
+  String percentageOfTotalExpenses(String percentage);
+
+  /// Label showing currency conversion details
+  ///
+  /// In en, this message translates to:
+  /// **'Converted from: {details}'**
+  String conversionDetails(String details);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -269,4 +269,27 @@ class TransactionViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  double getCategoryPercentageByCurrency(String categoryId, String currency) {
+    if (_transactions == null) return 0;
+
+    final totalExpensesInCurrency = _transactions!
+        .where(
+          (t) => t.currency == currency && t.type == TransactionType.expense,
+        )
+        .fold(0.0, (sum, t) => sum + t.amount);
+
+    if (totalExpensesInCurrency == 0) return 0;
+
+    final categoryExpensesInCurrency = _transactions!
+        .where(
+          (t) =>
+              t.categoryId == categoryId &&
+              t.currency == currency &&
+              t.type == TransactionType.expense,
+        )
+        .fold(0.0, (sum, t) => sum + t.amount);
+
+    return (categoryExpensesInCurrency / totalExpensesInCurrency) * 100;
+  }
 }

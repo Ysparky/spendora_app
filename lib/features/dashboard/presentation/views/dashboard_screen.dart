@@ -923,7 +923,7 @@ class _RecentTransactionsCard extends StatelessWidget {
                   final transaction = transactions[index];
                   return ListTile(
                     onTap: () =>
-                        context.push('/transactions/${transaction.id}'),
+                        context.push('/transactions/details/${transaction.id}'),
                     leading: Text(transaction.categoryIcon),
                     title: Text(transaction.description),
                     subtitle: Text(DateFormat.yMMMd().format(transaction.date)),
