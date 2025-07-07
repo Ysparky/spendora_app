@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:spendora_app/core/utils/icon_utils.dart';
 import 'package:spendora_app/core/utils/locale_utils.dart';
+import 'package:spendora_app/features/dashboard/presentation/views/dashboard_screen.dart'
+    as CurrencyUtils;
 import 'package:spendora_app/features/settings/presentation/viewmodels/settings_viewmodel.dart';
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
@@ -38,7 +40,8 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedCurrency = 'USD'; // Will be updated when transaction is loaded
+    _selectedCurrency = CurrencyUtils
+        .defaultCurrency; // Will be updated when transaction is loaded
     _loadTransaction();
   }
 

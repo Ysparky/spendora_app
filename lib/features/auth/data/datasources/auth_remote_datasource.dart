@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:spendora_app/core/utils/currency_utils.dart';
 
 class AuthRemoteDataSource {
   final FirebaseAuth _auth;
@@ -82,7 +83,7 @@ class AuthRemoteDataSource {
         'preferences': {
           'notifications': true,
           'language': 'en',
-          'currency': 'USD',
+          'currency': CurrencyUtils.defaultCurrency,
         },
       });
 

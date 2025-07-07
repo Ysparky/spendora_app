@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:spendora_app/core/utils/currency_utils.dart';
 
 part 'user.g.dart';
 part 'user.freezed.dart';
@@ -33,7 +34,7 @@ abstract class UserPreferences with _$UserPreferences {
   const factory UserPreferences({
     @Default(true) bool notifications,
     @Default('en') String language,
-    @Default('USD') String currency,
+    @Default(CurrencyUtils.defaultCurrency) String currency,
   }) = _UserPreferences;
 
   factory UserPreferences.fromJson(Map<String, dynamic> json) =>

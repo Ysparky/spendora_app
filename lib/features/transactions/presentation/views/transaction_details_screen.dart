@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:spendora_app/core/utils/icon_utils.dart';
 import 'package:spendora_app/core/utils/locale_utils.dart';
+import 'package:spendora_app/features/dashboard/presentation/views/dashboard_screen.dart'
+    as CurrencyUtils;
 import 'package:spendora_app/features/transactions/domain/models/category.dart';
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
@@ -103,7 +105,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final currencyFormat = NumberFormat.currency(
-      symbol: _transaction?.currency ?? 'USD',
+      symbol: _transaction?.currency ?? CurrencyUtils.defaultCurrency,
     );
     final dateFormat = DateFormat.yMMMd(
       Localizations.localeOf(context).languageCode,

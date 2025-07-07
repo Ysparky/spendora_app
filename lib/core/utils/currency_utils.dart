@@ -5,20 +5,13 @@ class CurrencyUtils {
   const CurrencyUtils._();
 
   /// Default currency code
-  static const String defaultCurrency = 'USD';
+  static const String defaultCurrency = 'PEN';
 
   /// Supported currencies with their symbols
   static const Map<String, String> currencySymbols = {
+    'PEN': 'S/',
     'USD': '\$',
     'EUR': '€',
-    'GBP': '£',
-    'JPY': '¥',
-    'INR': '₹',
-    'CNY': '¥',
-    'BRL': 'R\$',
-    'CAD': 'CA\$',
-    'AUD': 'A\$',
-    'NZD': 'NZ\$',
   };
 
   /// Format amount with currency symbol

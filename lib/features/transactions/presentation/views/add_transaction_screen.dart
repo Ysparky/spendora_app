@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:spendora_app/features/dashboard/presentation/views/dashboard_screen.dart'
+    as CurrencyUtils;
 import 'package:spendora_app/features/settings/presentation/viewmodels/settings_viewmodel.dart';
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
@@ -36,7 +38,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     super.initState();
     // Initialize with user's preferred currency
     _selectedCurrency =
-        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+        context.read<AuthProvider>().user?.preferences.currency ??
+        CurrencyUtils.defaultCurrency;
   }
 
   @override

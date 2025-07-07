@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:spendora_app/core/utils/currency_utils.dart';
 
 part 'onboarding_state.freezed.dart';
 part 'onboarding_state.g.dart';
@@ -16,7 +17,7 @@ abstract class OnboardingState with _$OnboardingState {
 
   factory OnboardingState.initial() => const OnboardingState(
     hasCompletedOnboarding: false,
-    selectedCurrency: 'USD',
+    selectedCurrency: CurrencyUtils.defaultCurrency,
     hasLoadedDefaultCategories: false,
   );
 }

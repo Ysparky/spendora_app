@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:spendora_app/core/utils/currency_utils.dart';
 
 part 'budget.freezed.dart';
 part 'budget.g.dart';
@@ -24,7 +25,7 @@ abstract class Budget with _$Budget {
     required String categoryId,
     required BudgetGoalType goalType,
     @Default(false) bool completed,
-    @Default('USD') String currency,
+    @Default(CurrencyUtils.defaultCurrency) String currency,
   }) = _Budget;
 
   factory Budget.fromJson(Map<String, dynamic> json) => _$BudgetFromJson(json);

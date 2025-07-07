@@ -5,6 +5,8 @@ import 'package:spendora_app/core/router/router.dart';
 import 'package:spendora_app/core/services/local_storage_service.dart';
 import 'package:spendora_app/core/providers/locale_provider.dart';
 import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:spendora_app/features/dashboard/presentation/views/dashboard_screen.dart'
+    as CurrencyUtils;
 import 'package:spendora_app/features/settings/presentation/viewmodels/settings_viewmodel.dart';
 import 'package:spendora_app/l10n/app_localizations.dart';
 
@@ -235,7 +237,8 @@ class SettingsScreen extends StatelessWidget {
     final storage = context.read<LocalStorageService>();
     final currentMode = storage.currencyDisplayMode;
     final userCurrency =
-        context.read<SettingsViewModel>().preferences?.currency ?? 'USD';
+        context.read<SettingsViewModel>().preferences?.currency ??
+        CurrencyUtils.defaultCurrency;
 
     showModalBottomSheet(
       context: context,

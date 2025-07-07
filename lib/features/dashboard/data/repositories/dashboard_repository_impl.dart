@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart' hide Transaction;
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart';
+import 'package:spendora_app/core/utils/currency_utils.dart';
 import 'package:spendora_app/features/dashboard/domain/models/dashboard_summary.dart';
 import 'package:spendora_app/features/dashboard/domain/repositories/dashboard_repository.dart';
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
@@ -70,7 +71,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
             .doc(user.uid)
             .get();
         final userCurrency =
-            userDoc.data()?['preferences']?['currency'] ?? 'USD';
+            userDoc.data()?['preferences']?['currency'] ??
+            CurrencyUtils.defaultCurrency;
 
         return DashboardSummary(
           currencyTotals: {

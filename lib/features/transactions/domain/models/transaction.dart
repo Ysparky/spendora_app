@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:spendora_app/features/dashboard/presentation/views/dashboard_screen.dart'
+    as CurrencyUtils;
 
 part 'transaction.freezed.dart';
 part 'transaction.g.dart';
@@ -52,7 +54,7 @@ abstract class Transaction with _$Transaction {
     @Default(false) bool isRecurring,
     RecurringType? recurringType,
     @DateTimeConverter() required DateTime createdAt,
-    @Default('USD') String currency,
+    @Default(CurrencyUtils.defaultCurrency) String currency,
   }) = _Transaction;
 
   factory Transaction.fromJson(Map<String, dynamic> json) =>

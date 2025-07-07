@@ -12,6 +12,8 @@ import 'package:spendora_app/features/transactions/domain/models/category.dart';
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
 import 'package:spendora_app/l10n/app_localizations.dart';
 
+const defaultCurrency = CurrencyUtils.defaultCurrency;
+
 class CategoriesOverviewScreen extends StatefulWidget {
   const CategoriesOverviewScreen({super.key});
 
@@ -34,7 +36,8 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
     final isUnifiedView =
         storage.currencyDisplayMode == CurrencyDisplayMode.unified;
     final userCurrency =
-        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+        context.read<AuthProvider>().user?.preferences.currency ??
+        defaultCurrency;
 
     if (isUnifiedView && mounted) {
       await _calculateConvertedAmounts(userCurrency);
@@ -56,7 +59,8 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
     final isUnifiedView =
         storage.currencyDisplayMode == CurrencyDisplayMode.unified;
     final userCurrency =
-        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+        context.read<AuthProvider>().user?.preferences.currency ??
+        defaultCurrency;
     final viewModel = context.read<TransactionViewModel>();
 
     if (isUnifiedView &&
@@ -126,7 +130,8 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
     final isUnifiedView =
         storage.currencyDisplayMode == CurrencyDisplayMode.unified;
     final userCurrency =
-        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+        context.read<AuthProvider>().user?.preferences.currency ??
+        defaultCurrency;
 
     if (isUnifiedView && mounted) {
       await _calculateConvertedAmounts(userCurrency);
@@ -141,7 +146,8 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
     final isUnifiedView =
         storage.currencyDisplayMode == CurrencyDisplayMode.unified;
     final userCurrency =
-        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+        context.read<AuthProvider>().user?.preferences.currency ??
+        defaultCurrency;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.categories)),

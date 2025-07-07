@@ -13,6 +13,8 @@ import 'package:spendora_app/features/dashboard/presentation/viewmodels/dashboar
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
 import 'package:spendora_app/l10n/app_localizations.dart';
 
+const defaultCurrency = CurrencyUtils.defaultCurrency;
+
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -153,7 +155,8 @@ class _BalanceCardState extends State<_BalanceCard> {
     final isUnifiedView =
         storage.currencyDisplayMode == CurrencyDisplayMode.unified;
     final userCurrency =
-        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+        context.read<AuthProvider>().user?.preferences.currency ??
+        defaultCurrency;
 
     if (isUnifiedView && _conversionDetails == null && !_isLoading) {
       _calculateConvertedTotal(userCurrency);
@@ -217,7 +220,8 @@ class _BalanceCardState extends State<_BalanceCard> {
     final isUnifiedView =
         storage.currencyDisplayMode == CurrencyDisplayMode.unified;
     final userCurrency =
-        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+        context.read<AuthProvider>().user?.preferences.currency ??
+        defaultCurrency;
 
     return Card(
       child: InkWell(
@@ -335,7 +339,8 @@ class _MonthlyOverviewCardState extends State<_MonthlyOverviewCard> {
     final isUnifiedView =
         storage.currencyDisplayMode == CurrencyDisplayMode.unified;
     final userCurrency =
-        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+        context.read<AuthProvider>().user?.preferences.currency ??
+        defaultCurrency;
 
     if (isUnifiedView && _convertedAmounts.isEmpty && !_isLoading) {
       _calculateConvertedAmounts(userCurrency);
@@ -415,7 +420,8 @@ class _MonthlyOverviewCardState extends State<_MonthlyOverviewCard> {
     final isUnifiedView =
         storage.currencyDisplayMode == CurrencyDisplayMode.unified;
     final userCurrency =
-        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+        context.read<AuthProvider>().user?.preferences.currency ??
+        defaultCurrency;
 
     return Card(
       child: InkWell(
@@ -650,7 +656,8 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
     final isUnifiedView =
         storage.currencyDisplayMode == CurrencyDisplayMode.unified;
     final userCurrency =
-        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+        context.read<AuthProvider>().user?.preferences.currency ??
+        defaultCurrency;
 
     if (isUnifiedView && _convertedAmounts.isEmpty && !_isLoading) {
       _calculateConvertedAmounts(userCurrency);
@@ -714,7 +721,8 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
     final isUnifiedView =
         storage.currencyDisplayMode == CurrencyDisplayMode.unified;
     final userCurrency =
-        context.read<AuthProvider>().user?.preferences.currency ?? 'USD';
+        context.read<AuthProvider>().user?.preferences.currency ??
+        defaultCurrency;
 
     return Card(
       child: Padding(
