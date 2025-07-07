@@ -358,4 +358,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String errorDeletingAccount(String error) => 'Error deleting account: $error';
+
+  @override
+  String get noTransactionsYet => 'No Transactions Yet';
+
+  @override
+  String get addTransactionToStart =>
+      'Add your first transaction to start tracking your finances';
 }

@@ -496,5 +496,13 @@
                 "example": "Network error"
             }
         }
+    },
+    "noTransactionsYet": "No Transactions Yet",
+    "@noTransactionsYet": {
+        "description": "Message shown when user has no transactions"
+    },
+    "addTransactionToStart": "Add your first transaction to start tracking your finances",
+    "@addTransactionToStart": {
+        "description": "Message encouraging user to add their first transaction"
     }
 } 

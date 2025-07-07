@@ -131,6 +131,8 @@
     "deleteAccountTitle": "Eliminar cuenta",
     "deleteAccountMessage": "¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.",
     "errorDeletingAccount": "Error al eliminar la cuenta: {error}",
+    "noTransactionsYet": "Aún No Hay Transacciones",
+    "addTransactionToStart": "Agrega tu primera transacción para comenzar a rastrear tus finanzas",
     "save": "Guardar",
     "cancel": "Cancelar"
 } 

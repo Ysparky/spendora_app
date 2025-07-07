@@ -361,4 +361,11 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String errorDeletingAccount(String error) =>
       'Error al eliminar la cuenta: $error';
+
+  @override
+  String get noTransactionsYet => 'Aún No Hay Transacciones';
+
+  @override
+  String get addTransactionToStart =>
+      'Agrega tu primera transacción para comenzar a rastrear tus finanzas';
 }

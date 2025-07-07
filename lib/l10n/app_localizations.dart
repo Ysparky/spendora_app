@@ -769,6 +769,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error deleting account: {error}'**
   String errorDeletingAccount(String error);
+
+  /// Message shown when user has no transactions
+  ///
+  /// In en, this message translates to:
+  /// **'No Transactions Yet'**
+  String get noTransactionsYet;
+
+  /// Message encouraging user to add their first transaction
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first transaction to start tracking your finances'**
+  String get addTransactionToStart;
 }
 
 class _AppLocalizationsDelegate

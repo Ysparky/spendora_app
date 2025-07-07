@@ -40,6 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -87,11 +88,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(height: 16),
                 _MonthlyOverviewCard(summary: summary),
                 const SizedBox(height: 16),
-                _TopCategoriesCard(summary: summary),
-                const SizedBox(height: 16),
-                _RecentTransactionsCard(
-                  transactions: summary.recentTransactions,
-                ),
+                if (summary.topCategories.isNotEmpty) ...[
+                  _TopCategoriesCard(summary: summary),
+                  const SizedBox(height: 16),
+                ],
+                if (summary.recentTransactions.isNotEmpty)
+                  _RecentTransactionsCard(
+                    transactions: summary.recentTransactions,
+                  ),
+                if (summary.topCategories.isEmpty &&
+                    summary.recentTransactions.isEmpty)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 32.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            l10n.noTransactionsYet,
+                            style: theme.textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.addTransactionToStart,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             ),
           );

@@ -66,6 +66,30 @@ class DashboardRepositoryImpl implements DashboardRepository {
       }
 
       final transactionsSnapshot = await query.get();
+
+      // If there are no transactions, return default values with user's preferred currency
+      if (transactionsSnapshot.docs.isEmpty) {
+        final userDoc = await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        final userCurrency =
+            userDoc.data()?['preferences']?['currency'] ?? 'USD';
+
+        return DashboardSummary(
+          currencyTotals: {
+            userCurrency: const CurrencyTotal(
+              totalBalance: 0,
+              monthlyIncome: 0,
+              monthlyExpenses: 0,
+              monthlySavings: 0,
+            ),
+          },
+          topCategories: [],
+          recentTransactions: [],
+        );
+      }
+
       final transactions = transactionsSnapshot.docs.map((doc) {
         final data = doc.data();
         return Transaction.fromJson({
