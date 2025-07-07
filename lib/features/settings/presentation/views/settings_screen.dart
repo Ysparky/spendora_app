@@ -393,7 +393,6 @@ class _EditProfileDialog extends StatefulWidget {
 
 class _EditProfileDialogState extends State<_EditProfileDialog> {
   late TextEditingController _nameController;
-  late TextEditingController _emailController;
   bool _isLoading = false;
 
   @override
@@ -402,15 +401,11 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
     _nameController = TextEditingController(
       text: widget.authProvider.user?.name,
     );
-    _emailController = TextEditingController(
-      text: widget.authProvider.user?.email,
-    );
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _emailController.dispose();
     super.dispose();
   }
 
@@ -428,15 +423,6 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
               labelText: l10n.name,
               enabled: !_isLoading,
             ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _emailController,
-            decoration: InputDecoration(
-              labelText: l10n.email,
-              enabled: !_isLoading,
-            ),
-            keyboardType: TextInputType.emailAddress,
           ),
         ],
       ),
@@ -463,8 +449,10 @@ class _EditProfileDialogState extends State<_EditProfileDialog> {
     setState(() => _isLoading = true);
 
     try {
-      // TODO: Implement profile update
-      context.pop();
+      await widget.authProvider.updateProfile(_nameController.text.trim());
+      if (mounted) {
+        context.pop();
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
