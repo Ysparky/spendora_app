@@ -22,14 +22,110 @@ class DashboardRepositoryImpl implements DashboardRepository {
       final user = _auth.currentUser;
       if (user == null) throw Exception('No user signed in');
 
-      // Get transactions for the current month
-      final now = DateTime.now();
-      final startOfMonth = DateTime(now.year, now.month, 1);
-      final endOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+      // Get all transactions for total balance
+      final allTransactionsQuery = _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('transactions');
 
-      return getDashboardSummaryForPeriod(
-        startDate: startOfMonth,
-        endDate: endOfMonth,
+      final allTransactionsSnapshot = await allTransactionsQuery.get();
+
+      // Calculate total balance from all transactions
+      final allTransactions = allTransactionsSnapshot.docs.map((doc) {
+        final data = doc.data();
+        return Transaction.fromJson({
+          ...data,
+          'id': doc.id,
+          'date': (data['date'] as Timestamp).toDate().toIso8601String(),
+          'createdAt': (data['createdAt'] as Timestamp)
+              .toDate()
+              .toIso8601String(),
+        });
+      }).toList();
+
+      // Group all transactions by currency
+      final currencyGroups = <String, List<Transaction>>{};
+      for (final transaction in allTransactions) {
+        currencyGroups.putIfAbsent(transaction.currency, () => []);
+        currencyGroups[transaction.currency]!.add(transaction);
+      }
+
+      // Calculate total balance for each currency
+      final currencyTotals = <String, CurrencyTotal>{};
+      final now = DateTime.now();
+      for (final entry in currencyGroups.entries) {
+        final currency = entry.key;
+        final currencyTransactions = entry.value;
+
+        double totalBalance = 0;
+        for (final transaction in currencyTransactions) {
+          if (transaction.type == TransactionType.income) {
+            totalBalance += transaction.amount;
+          } else {
+            totalBalance -= transaction.amount;
+          }
+        }
+
+        // Get monthly transactions for this currency
+        final startOfMonth = DateTime(now.year, now.month, 1, 0, 0, 0);
+        final endOfMonth = DateTime(now.year, now.month + 1, 0, 23, 59, 59);
+
+        final monthlyTransactions = currencyTransactions.where((t) {
+          return !t.date.isBefore(startOfMonth) && !t.date.isAfter(endOfMonth);
+        }).toList();
+
+        double monthlyIncome = 0;
+        double monthlyExpenses = 0;
+        for (final transaction in monthlyTransactions) {
+          if (transaction.type == TransactionType.income) {
+            monthlyIncome += transaction.amount;
+          } else {
+            monthlyExpenses += transaction.amount;
+          }
+        }
+
+        currencyTotals[currency] = CurrencyTotal(
+          totalBalance: totalBalance,
+          monthlyIncome: monthlyIncome,
+          monthlyExpenses: monthlyExpenses,
+          monthlySavings: monthlyIncome - monthlyExpenses,
+        );
+      }
+
+      // If there are no transactions, return default values with user's preferred currency
+      if (currencyTotals.isEmpty) {
+        final userDoc = await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        final userCurrency =
+            userDoc.data()?['preferences']?['currency'] ??
+            CurrencyUtils.defaultCurrency;
+
+        return DashboardSummary(
+          currencyTotals: {
+            userCurrency: const CurrencyTotal(
+              totalBalance: 0,
+              monthlyIncome: 0,
+              monthlyExpenses: 0,
+              monthlySavings: 0,
+            ),
+          },
+          topCategories: [],
+          recentTransactions: [],
+        );
+      }
+
+      // Get monthly transactions for categories and recent transactions
+      final monthlyDashboard = await getDashboardSummaryForPeriod(
+        startDate: DateTime(now.year, now.month, 1, 0, 0, 0),
+        endDate: DateTime(now.year, now.month + 1, 0, 23, 59, 59),
+      );
+
+      return DashboardSummary(
+        currencyTotals: currencyTotals,
+        topCategories: monthlyDashboard.topCategories,
+        recentTransactions: monthlyDashboard.recentTransactions,
       );
     } catch (e) {
       debugPrint('DashboardRepository: Error getting dashboard summary - $e');
