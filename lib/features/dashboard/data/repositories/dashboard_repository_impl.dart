@@ -52,18 +52,14 @@ class DashboardRepositoryImpl implements DashboardRepository {
           .collection('transactions');
 
       Query<Map<String, dynamic>> query = transactionsQuery;
-      if (startDate != null) {
-        query = query.where(
-          'date',
-          isGreaterThanOrEqualTo: Timestamp.fromDate(startDate),
-        );
-      }
-      if (endDate != null) {
-        query = query.where(
-          'date',
-          isLessThanOrEqualTo: Timestamp.fromDate(endDate),
-        );
-      }
+      query = query.where(
+        'date',
+        isGreaterThanOrEqualTo: Timestamp.fromDate(startDate),
+      );
+      query = query.where(
+        'date',
+        isLessThanOrEqualTo: Timestamp.fromDate(endDate),
+      );
 
       final transactionsSnapshot = await query.get();
 

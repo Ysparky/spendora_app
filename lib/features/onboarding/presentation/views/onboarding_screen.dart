@@ -5,7 +5,6 @@ import 'package:spendora_app/core/router/router.dart';
 import 'package:spendora_app/core/utils/icon_utils.dart';
 import 'package:spendora_app/core/utils/locale_utils.dart';
 import 'package:spendora_app/features/onboarding/presentation/viewmodels/onboarding_viewmodel.dart';
-import 'package:spendora_app/features/transactions/domain/models/category.dart';
 import 'package:spendora_app/l10n/app_localizations.dart';
 
 class OnboardingScreen extends StatefulWidget {
