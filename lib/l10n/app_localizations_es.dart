@@ -51,7 +51,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get enterEmail => 'Por favor, ingresa tu correo electrónico';
 
   @override
-  String get enterValidEmail => 'Por favor, ingresa un correo electrónico válido';
+  String get enterValidEmail =>
+      'Por favor, ingresa un correo electrónico válido';
 
   @override
   String get enterPassword => 'Por favor, ingresa una contraseña';
@@ -69,7 +70,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get enterEmailForReset => 'Por favor, ingresa tu correo electrónico';
 
   @override
-  String get passwordResetSent => 'Se ha enviado el correo de restablecimiento de contraseña';
+  String get passwordResetSent =>
+      'Se ha enviado el correo de restablecimiento de contraseña';
 
   @override
   String get homeTab => 'Inicio';
@@ -144,19 +146,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String get onboardingWelcomeTitle => 'Bienvenido a Spendora';
 
   @override
-  String get onboardingWelcomeDescription => 'Toma el control de tus finanzas con un seguimiento inteligente de gastos y presupuestos';
+  String get onboardingWelcomeDescription =>
+      'Toma el control de tus finanzas con un seguimiento inteligente de gastos y presupuestos';
 
   @override
   String get onboardingCurrencyTitle => 'Selecciona tu moneda';
 
   @override
-  String get onboardingCurrencyDescription => 'Elige tu moneda preferida para las transacciones';
+  String get onboardingCurrencyDescription =>
+      'Elige tu moneda preferida para las transacciones';
 
   @override
   String get onboardingCategoriesTitle => 'Categorías predeterminadas';
 
   @override
-  String get onboardingCategoriesDescription => 'Hemos preparado algunas categorías para empezar';
+  String get onboardingCategoriesDescription =>
+      'Hemos preparado algunas categorías para empezar';
 
   @override
   String get onboardingNext => 'Siguiente';
@@ -233,7 +238,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get confirmDelete => '¿Eliminar Transacción?';
 
   @override
-  String get confirmDeleteMessage => '¿Estás seguro de que deseas eliminar esta transacción? Esta acción no se puede deshacer.';
+  String get confirmDeleteMessage =>
+      '¿Estás seguro de que deseas eliminar esta transacción? Esta acción no se puede deshacer.';
 
   @override
   String get selectDate => 'Seleccionar Fecha';
@@ -344,4 +350,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get email => 'Correo electrónico';
+
+  @override
+  String get deleteAccountTitle => 'Eliminar cuenta';
+
+  @override
+  String get deleteAccountMessage =>
+      '¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.';
+
+  @override
+  String errorDeletingAccount(String error) =>
+      'Error al eliminar la cuenta: $error';
 }

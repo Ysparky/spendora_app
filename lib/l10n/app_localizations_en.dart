@@ -144,19 +144,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingWelcomeTitle => 'Welcome to Spendora';
 
   @override
-  String get onboardingWelcomeDescription => 'Take control of your finances with smart expense tracking and budgeting';
+  String get onboardingWelcomeDescription =>
+      'Take control of your finances with smart expense tracking and budgeting';
 
   @override
   String get onboardingCurrencyTitle => 'Select Your Currency';
 
   @override
-  String get onboardingCurrencyDescription => 'Choose your preferred currency for transactions';
+  String get onboardingCurrencyDescription =>
+      'Choose your preferred currency for transactions';
 
   @override
   String get onboardingCategoriesTitle => 'Default Categories';
 
   @override
-  String get onboardingCategoriesDescription => 'We\'ve prepared some categories to get you started';
+  String get onboardingCategoriesDescription =>
+      'We\'ve prepared some categories to get you started';
 
   @override
   String get onboardingNext => 'Next';
@@ -233,7 +236,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmDelete => 'Delete Transaction?';
 
   @override
-  String get confirmDeleteMessage => 'Are you sure you want to delete this transaction? This action cannot be undone.';
+  String get confirmDeleteMessage =>
+      'Are you sure you want to delete this transaction? This action cannot be undone.';
 
   @override
   String get selectDate => 'Select Date';
@@ -344,4 +348,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get email => 'Email';
+
+  @override
+  String get deleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountMessage =>
+      'Are you sure you want to delete your account? This action cannot be undone.';
+
+  @override
+  String errorDeletingAccount(String error) => 'Error deleting account: $error';
 }

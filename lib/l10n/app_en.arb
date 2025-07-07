@@ -478,5 +478,23 @@
     "email": "Email",
     "@email": {
         "description": "Label for email field"
+    },
+    "deleteAccountTitle": "Delete Account",
+    "@deleteAccountTitle": {
+        "description": "Title for delete account confirmation dialog"
+    },
+    "deleteAccountMessage": "Are you sure you want to delete your account? This action cannot be undone.",
+    "@deleteAccountMessage": {
+        "description": "Message for delete account confirmation dialog"
+    },
+    "errorDeletingAccount": "Error deleting account: {error}",
+    "@errorDeletingAccount": {
+        "description": "Error message shown when account deletion fails",
+        "placeholders": {
+            "error": {
+                "type": "String",
+                "example": "Network error"
+            }
+        }
     }
 } 
