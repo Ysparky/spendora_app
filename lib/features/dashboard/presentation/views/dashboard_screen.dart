@@ -288,8 +288,10 @@ class _BalanceCardState extends State<_BalanceCard> {
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Row(
                       children: [
-                        Text(currency, style: theme.textTheme.titleSmall),
-                        const SizedBox(width: 16),
+                        if (widget.summary.currencyTotals.length > 1) ...[
+                          Text(currency, style: theme.textTheme.titleSmall),
+                          const SizedBox(width: 16),
+                        ],
                         Text(
                           currencyFormat.format(totals.totalBalance),
                           style: theme.textTheme.titleLarge?.copyWith(
@@ -559,13 +561,16 @@ class _MonthlyOverviewCardState extends State<_MonthlyOverviewCard> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              currency,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+            // Only show currency label if there's more than one currency
+            if (widget.summary.currencyTotals.length > 1)
+              Text(
+                currency,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
+            if (widget.summary.currencyTotals.length > 1)
+              const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
@@ -836,13 +841,16 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                currency,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+              // Only show currency label if there's more than one currency group
+              if (groupedCategories.length > 1) ...[
+                Text(
+                  currency,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
+                const SizedBox(height: 8),
+              ],
               ...categories.map((category) {
                 return InkWell(
                   onTap: () => context.push(

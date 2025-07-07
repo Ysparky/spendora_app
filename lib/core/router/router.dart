@@ -131,7 +131,7 @@ class AppRouter {
         debugPrint('AppRouter: Redirecting to onboarding');
         return onboarding;
       }
-      debugPrint('AppRouter: Redirecting to home');
+      debugPrint('AppRouter: Redirecting to dashboard');
       return dashboard;
     }
 
@@ -143,7 +143,7 @@ class AppRouter {
 
     // If authenticated and completed onboarding but still on onboarding route
     if (isAuthenticated && hasCompletedOnboarding && isOnboardingRoute) {
-      debugPrint('AppRouter: Redirecting to home');
+      debugPrint('AppRouter: Redirecting to dashboard');
       return dashboard;
     }
 

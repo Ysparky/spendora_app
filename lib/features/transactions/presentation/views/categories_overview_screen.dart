@@ -317,13 +317,16 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              currency,
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: theme.colorScheme.primary,
+            // Only show currency header if there's more than one currency
+            if (groupedCategories.length > 1) ...[
+              Text(
+                currency,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  color: theme.colorScheme.primary,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
+              const SizedBox(height: 8),
+            ],
             ...categories.map((data) {
               final (category, amount, percentage) = data;
               return Card(
@@ -383,7 +386,8 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
                 ),
               );
             }),
-            const SizedBox(height: 16),
+            // Only add spacing if there's more than one currency
+            if (groupedCategories.length > 1) const SizedBox(height: 16),
           ],
         );
       },

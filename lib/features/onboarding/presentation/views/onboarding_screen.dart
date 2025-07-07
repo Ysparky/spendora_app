@@ -45,7 +45,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final viewModel = context.read<OnboardingViewModel>();
     await viewModel.completeOnboarding();
     if (mounted) {
-      context.go(AppRouter.home);
+      context.go(AppRouter.dashboard);
     }
   }
 
