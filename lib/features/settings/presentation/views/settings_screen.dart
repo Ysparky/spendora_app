@@ -142,14 +142,6 @@ class SettingsScreen extends StatelessWidget {
               Card(
                 child: Column(
                   children: [
-                    // Categories
-                    ListTile(
-                      leading: const Icon(Icons.category_outlined),
-                      title: Text(l10n.manageCategories),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {}, // TODO: Navigate to categories management
-                    ),
-                    const Divider(),
                     // Tags
                     ListTile(
                       leading: const Icon(Icons.tag),
