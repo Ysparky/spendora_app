@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:spendora_app/core/utils/currency_utils.dart';
+import 'package:spendora_app/core/utils/icon_utils.dart';
+import 'package:spendora_app/core/utils/locale_utils.dart';
 import 'package:spendora_app/features/transactions/domain/models/category.dart';
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
@@ -218,9 +221,16 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                               label: l10n.category,
                               child: Row(
                                 children: [
-                                  Text(category.icon),
+                                  Icon(
+                                    IconUtils.getIconData(category.icon),
+                                    size: 20,
+                                  ),
                                   const SizedBox(width: 8),
-                                  Text(category.name),
+                                  Text(
+                                    category.getLocalizedName(
+                                      context.currentLocaleCode,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),

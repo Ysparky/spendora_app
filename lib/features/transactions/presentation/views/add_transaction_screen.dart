@@ -7,6 +7,8 @@ import 'package:spendora_app/features/settings/presentation/viewmodels/settings_
 import 'package:spendora_app/features/transactions/domain/models/transaction.dart';
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
 import 'package:spendora_app/l10n/app_localizations.dart';
+import 'package:spendora_app/core/utils/icon_utils.dart';
+import 'package:spendora_app/core/utils/locale_utils.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   const AddTransactionScreen({super.key});
@@ -259,9 +261,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                   value: category.id,
                                   child: Row(
                                     children: [
-                                      Text(category.icon),
+                                      Icon(
+                                        IconUtils.getIconData(category.icon),
+                                        size: 20,
+                                      ),
                                       const SizedBox(width: 8),
-                                      Text(category.name),
+                                      Text(
+                                        category.getLocalizedName(
+                                          context.currentLocaleCode,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),

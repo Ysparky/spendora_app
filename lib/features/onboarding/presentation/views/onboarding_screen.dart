@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:spendora_app/core/router/router.dart';
+import 'package:spendora_app/core/utils/icon_utils.dart';
+import 'package:spendora_app/core/utils/locale_utils.dart';
 import 'package:spendora_app/features/onboarding/presentation/viewmodels/onboarding_viewmodel.dart';
+import 'package:spendora_app/features/transactions/domain/models/category.dart';
 import 'package:spendora_app/l10n/app_localizations.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -226,13 +229,10 @@ class _CategoryPreviewPage extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          category.icon,
-                          style: const TextStyle(fontSize: 24),
-                        ),
+                        Icon(IconUtils.getIconData(category.icon), size: 24),
                         const SizedBox(height: 8),
                         Text(
-                          category.name,
+                          category.getLocalizedName(context.currentLocaleCode),
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),

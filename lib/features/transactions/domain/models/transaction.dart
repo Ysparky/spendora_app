@@ -24,6 +24,21 @@ enum RecurringType {
   yearly,
 }
 
+class DateTimeConverter implements JsonConverter<DateTime, dynamic> {
+  const DateTimeConverter();
+
+  @override
+  DateTime fromJson(dynamic json) {
+    if (json is Timestamp) return json.toDate();
+    if (json is String) return DateTime.parse(json);
+    if (json is DateTime) return json;
+    throw Exception('Invalid date format');
+  }
+
+  @override
+  String toJson(DateTime date) => date.toIso8601String();
+}
+
 @freezed
 abstract class Transaction with _$Transaction {
   const factory Transaction({
@@ -32,11 +47,11 @@ abstract class Transaction with _$Transaction {
     required TransactionType type,
     String? categoryId,
     required List<String> tags,
-    required DateTime date,
+    @DateTimeConverter() required DateTime date,
     required String description,
     @Default(false) bool isRecurring,
     RecurringType? recurringType,
-    required DateTime createdAt,
+    @DateTimeConverter() required DateTime createdAt,
     @Default('USD') String currency,
   }) = _Transaction;
 

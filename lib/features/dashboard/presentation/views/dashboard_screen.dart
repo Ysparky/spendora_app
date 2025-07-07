@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:spendora_app/core/utils/currency_utils.dart';
 import 'package:spendora_app/core/services/local_storage_service.dart';
 import 'package:spendora_app/core/services/currency_conversion_service.dart';
+import 'package:spendora_app/core/utils/icon_utils.dart';
+import 'package:spendora_app/core/utils/locale_utils.dart';
 import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:spendora_app/features/dashboard/domain/models/dashboard_summary.dart';
 import 'package:spendora_app/features/dashboard/presentation/viewmodels/dashboard_viewmodel.dart';
@@ -731,7 +733,11 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
               children: [
                 Row(
                   children: [
-                    Text(category.icon),
+                    Icon(
+                      IconUtils.getIconData(category.icon),
+                      size: 24,
+                      color: theme.textTheme.titleLarge?.color,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(
@@ -740,7 +746,9 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
                           Row(
                             children: [
                               Text(
-                                category.name,
+                                category.getLocalizedName(
+                                  context.currentLocaleCode,
+                                ),
                                 style: theme.textTheme.titleSmall,
                               ),
                               const Spacer(),
@@ -819,7 +827,11 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Row(
                       children: [
-                        Text(category.icon),
+                        Icon(
+                          IconUtils.getIconData(category.icon),
+                          size: 24,
+                          color: theme.textTheme.titleLarge?.color,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Column(
@@ -828,7 +840,9 @@ class _TopCategoriesCardState extends State<_TopCategoriesCard> {
                               Row(
                                 children: [
                                   Text(
-                                    category.name,
+                                    category.getLocalizedName(
+                                      context.currentLocaleCode,
+                                    ),
                                     style: theme.textTheme.titleSmall,
                                   ),
                                   const Spacer(),
@@ -920,7 +934,10 @@ class _RecentTransactionsCard extends StatelessWidget {
                   return ListTile(
                     onTap: () =>
                         context.push('/transactions/details/${transaction.id}'),
-                    leading: Text(transaction.categoryIcon),
+                    leading: Icon(
+                      IconUtils.getIconData(transaction.categoryIcon),
+                      size: 20,
+                    ),
                     title: Text(transaction.description),
                     subtitle: Text(DateFormat.yMMMd().format(transaction.date)),
                     trailing: Text(

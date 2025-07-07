@@ -294,6 +294,8 @@ class SettingsScreen extends StatelessWidget {
     );
 
     if (confirmed == true && context.mounted) {
+      // Clear local storage before signing out
+      await context.read<LocalStorageService>().clearAll();
       await context.read<AuthProvider>().signOut();
       if (context.mounted) {
         context.go(AppRouter.login);

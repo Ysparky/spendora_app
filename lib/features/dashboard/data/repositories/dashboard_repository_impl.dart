@@ -45,16 +45,27 @@ class DashboardRepositoryImpl implements DashboardRepository {
       final user = _auth.currentUser;
       if (user == null) throw Exception('No user signed in');
 
-      // Get all transactions for the period
-      final transactionsSnapshot = await _firestore
+      // Get transactions
+      final transactionsQuery = _firestore
           .collection('users')
           .doc(user.uid)
-          .collection('transactions')
-          .where('date', isGreaterThanOrEqualTo: startDate)
-          .where('date', isLessThanOrEqualTo: endDate)
-          .orderBy('date', descending: true)
-          .get();
+          .collection('transactions');
 
+      Query<Map<String, dynamic>> query = transactionsQuery;
+      if (startDate != null) {
+        query = query.where(
+          'date',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startDate),
+        );
+      }
+      if (endDate != null) {
+        query = query.where(
+          'date',
+          isLessThanOrEqualTo: Timestamp.fromDate(endDate),
+        );
+      }
+
+      final transactionsSnapshot = await query.get();
       final transactions = transactionsSnapshot.docs.map((doc) {
         final data = doc.data();
         return Transaction.fromJson({
@@ -70,8 +81,8 @@ class DashboardRepositoryImpl implements DashboardRepository {
       // Group transactions by currency
       final currencyGroups = <String, List<Transaction>>{};
       for (final transaction in transactions) {
-        final currency = transaction.currency;
-        currencyGroups.putIfAbsent(currency, () => []).add(transaction);
+        currencyGroups.putIfAbsent(transaction.currency, () => []);
+        currencyGroups[transaction.currency]!.add(transaction);
       }
 
       // Calculate totals for each currency
@@ -105,20 +116,23 @@ class DashboardRepositoryImpl implements DashboardRepository {
         );
       }
 
-      // Get category details
+      // Get category details from global categories
       final categoriesSnapshot = await _firestore
-          .collection('users')
-          .doc(user.uid)
           .collection('categories')
           .get();
 
       final categories = Map.fromEntries(
-        categoriesSnapshot.docs.map(
-          (doc) => MapEntry(doc.id, {
-            'name': doc.data()['name'],
-            'icon': doc.data()['icon'],
-          }),
-        ),
+        categoriesSnapshot.docs.map((doc) {
+          final data = doc.data();
+          final translations = data['translations'];
+          return MapEntry(doc.id, {
+            'name': data['name'],
+            'icon': data['icon'],
+            'translations': translations is Map
+                ? Map<String, String>.from(translations)
+                : <String, String>{},
+          });
+        }),
       );
 
       // Calculate top categories per currency
@@ -127,10 +141,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
         final currency = entry.key;
         final currencyTransactions = entry.value;
 
-        // Calculate category totals for this currency
+        // Group transactions by category
         final categoryTotals = <String, double>{};
         double totalExpenses = 0;
-
         for (final transaction in currencyTransactions) {
           if (transaction.type == TransactionType.expense &&
               transaction.categoryId != null) {
@@ -141,42 +154,48 @@ class DashboardRepositoryImpl implements DashboardRepository {
           }
         }
 
-        // Sort and get top categories for this currency
+        // Sort categories by total amount
         final sortedCategories = categoryTotals.entries.toList()
           ..sort((a, b) => b.value.compareTo(a.value));
 
-        allTopCategories.addAll(
-          sortedCategories.take(3).map((entry) {
-            final category = categories[entry.key]!;
-            return CategorySummary(
-              categoryId: entry.key,
-              name: category['name'] as String,
-              icon: category['icon'] as String,
-              amount: entry.value,
-              percentage: totalExpenses > 0
-                  ? (entry.value / totalExpenses * 100)
-                  : 0,
-              currency: currency,
+        // Take top 5 categories
+        for (final entry in sortedCategories.take(5)) {
+          final categoryId = entry.key;
+          final categoryData = categories[categoryId];
+          if (categoryData != null) {
+            allTopCategories.add(
+              CategorySummary(
+                categoryId: categoryId,
+                name: categoryData['name'] as String,
+                icon: categoryData['icon'] as String,
+                amount: entry.value,
+                percentage: totalExpenses > 0
+                    ? (entry.value / totalExpenses * 100)
+                    : 0,
+                currency: currency,
+                translations:
+                    (categoryData['translations'] as Map<String, String>?) ??
+                    {},
+              ),
             );
-          }),
-        );
+          }
+        }
       }
-
-      // Sort all top categories by amount (normalized by currency)
-      allTopCategories.sort((a, b) => b.amount.compareTo(a.amount));
 
       // Get recent transactions
       final recentTransactions = transactions.take(5).map((transaction) {
-        final category = categories[transaction.categoryId]!;
+        final categoryData = transaction.categoryId != null
+            ? categories[transaction.categoryId]
+            : null;
         return TransactionSummary(
           id: transaction.id,
           description: transaction.description,
           amount: transaction.amount,
           date: transaction.date,
-          categoryId: transaction.categoryId!,
-          categoryName: category['name'] as String,
-          categoryIcon: category['icon'] as String,
-          type: transaction.type.toString(),
+          categoryId: transaction.categoryId ?? 'other',
+          categoryName: categoryData?['name'] as String? ?? 'Other',
+          categoryIcon: categoryData?['icon'] as String? ?? '📦',
+          type: transaction.type.toString().split('.').last,
           currency: transaction.currency,
         );
       }).toList();
@@ -187,9 +206,7 @@ class DashboardRepositoryImpl implements DashboardRepository {
         recentTransactions: recentTransactions,
       );
     } catch (e) {
-      debugPrint(
-        'DashboardRepository: Error getting dashboard summary for period - $e',
-      );
+      debugPrint('DashboardRepository: Error getting summary - $e');
       rethrow;
     }
   }

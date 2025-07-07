@@ -38,7 +38,8 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
       return OnboardingState(
         hasCompletedOnboarding: _localStorage.hasCompletedOnboarding,
         selectedCurrency: preferences.currency,
-        hasLoadedDefaultCategories: false,
+        hasLoadedDefaultCategories:
+            true, // Always true since categories are global
       );
     } catch (e) {
       foundation.debugPrint(
@@ -78,24 +79,24 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
   @override
   Future<void> loadDefaultCategories() async {
     try {
-      final user = _auth.currentUser;
-      if (user == null) throw Exception('No user signed in');
+      // Check if global categories exist
+      final categoriesSnapshot = await _firestore
+          .collection('categories')
+          .get();
 
-      final batch = _firestore.batch();
-      final categoriesRef = _firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('categories');
+      // If no categories exist, create default ones
+      if (categoriesSnapshot.docs.isEmpty) {
+        final batch = _firestore.batch();
+        final categoriesRef = _firestore.collection('categories');
 
-      final defaultCategories = getDefaultCategories();
-      for (final category in defaultCategories) {
-        batch.set(categoriesRef.doc(category.id), {
-          ...category.toJson(),
-          'userDefined': false,
-        });
+        final defaultCategories = getDefaultCategories();
+        for (final category in defaultCategories) {
+          batch.set(categoriesRef.doc(category.id), category.toJson());
+        }
+
+        await batch.commit();
+        foundation.debugPrint('Default categories created successfully');
       }
-
-      await batch.commit();
     } catch (e) {
       foundation.debugPrint(
         'OnboardingRepository: Error loading default categories - $e',
@@ -124,16 +125,66 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
   @override
   List<Category> getDefaultCategories() {
     return [
-      Category(id: 'food', name: 'Food & Dining', icon: '🍔'),
-      Category(id: 'transport', name: 'Transportation', icon: '🚗'),
-      Category(id: 'housing', name: 'Housing & Rent', icon: '🏠'),
-      Category(id: 'utilities', name: 'Utilities', icon: '💡'),
-      Category(id: 'entertainment', name: 'Entertainment', icon: '🎮'),
-      Category(id: 'shopping', name: 'Shopping', icon: '🛍️'),
-      Category(id: 'health', name: 'Healthcare', icon: '🏥'),
-      Category(id: 'education', name: 'Education', icon: '📚'),
-      Category(id: 'travel', name: 'Travel', icon: '✈️'),
-      Category(id: 'other', name: 'Other', icon: '📦'),
+      Category(
+        id: 'food',
+        name: 'Food & Dining',
+        icon: 'restaurant',
+        translations: {'es': 'Comida y Restaurantes'},
+      ),
+      Category(
+        id: 'transport',
+        name: 'Transportation',
+        icon: 'directions_car',
+        translations: {'es': 'Transporte'},
+      ),
+      Category(
+        id: 'housing',
+        name: 'Housing & Rent',
+        icon: 'home',
+        translations: {'es': 'Vivienda y Alquiler'},
+      ),
+      Category(
+        id: 'utilities',
+        name: 'Utilities',
+        icon: 'lightbulb',
+        translations: {'es': 'Servicios Públicos'},
+      ),
+      Category(
+        id: 'entertainment',
+        name: 'Entertainment',
+        icon: 'sports_esports',
+        translations: {'es': 'Entretenimiento'},
+      ),
+      Category(
+        id: 'shopping',
+        name: 'Shopping',
+        icon: 'shopping_cart',
+        translations: {'es': 'Compras'},
+      ),
+      Category(
+        id: 'health',
+        name: 'Healthcare',
+        icon: 'local_hospital',
+        translations: {'es': 'Salud'},
+      ),
+      Category(
+        id: 'education',
+        name: 'Education',
+        icon: 'school',
+        translations: {'es': 'Educación'},
+      ),
+      Category(
+        id: 'travel',
+        name: 'Travel',
+        icon: 'flight',
+        translations: {'es': 'Viajes'},
+      ),
+      Category(
+        id: 'other',
+        name: 'Other',
+        icon: 'category',
+        translations: {'es': 'Otros'},
+      ),
     ];
   }
 }

@@ -279,15 +279,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
   @override
   Future<List<Category>> getCategories() async {
     try {
-      final user = _auth.currentUser;
-      if (user == null) throw Exception('No user signed in');
-
-      final snapshot = await _firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('categories')
-          .get();
-
+      final snapshot = await _firestore.collection('categories').get();
       return snapshot.docs.map((doc) => Category.fromFirestore(doc)).toList();
     } catch (e) {
       debugPrint('TransactionRepository: Error getting categories - $e');

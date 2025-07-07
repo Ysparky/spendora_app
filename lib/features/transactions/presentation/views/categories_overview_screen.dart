@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:spendora_app/core/services/local_storage_service.dart';
 import 'package:spendora_app/core/services/currency_conversion_service.dart';
 import 'package:spendora_app/core/utils/currency_utils.dart';
+import 'package:spendora_app/core/utils/icon_utils.dart';
+import 'package:spendora_app/core/utils/locale_utils.dart';
 import 'package:spendora_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:spendora_app/features/transactions/domain/models/category.dart';
 import 'package:spendora_app/features/transactions/presentation/viewmodels/transaction_viewmodel.dart';
@@ -222,11 +224,15 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
                 children: [
                   Row(
                     children: [
-                      Text(category.icon, style: theme.textTheme.titleLarge),
+                      Icon(
+                        IconUtils.getIconData(category.icon),
+                        size: 24,
+                        color: theme.textTheme.titleLarge?.color,
+                      ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Text(
-                          category.name,
+                          category.getLocalizedName(context.currentLocaleCode),
                           style: theme.textTheme.titleMedium,
                         ),
                       ),
@@ -333,14 +339,17 @@ class _CategoriesOverviewScreenState extends State<CategoriesOverviewScreen> {
                       children: [
                         Row(
                           children: [
-                            Text(
-                              category.icon,
-                              style: theme.textTheme.titleLarge,
+                            Icon(
+                              IconUtils.getIconData(category.icon),
+                              size: 24,
+                              color: theme.textTheme.titleLarge?.color,
                             ),
-                            const SizedBox(width: 16),
+                            const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                category.name,
+                                category.getLocalizedName(
+                                  context.currentLocaleCode,
+                                ),
                                 style: theme.textTheme.titleMedium,
                               ),
                             ),

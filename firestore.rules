@@ -19,6 +19,12 @@ service cloud.firestore {
       return data.amount is number && data.amount > 0;
     }
 
+    // Global categories collection
+    match /categories/{categoryId} {
+      allow read: if isSignedIn();
+      allow write: if false;  // Only allow writes through admin or backend
+    }
+
     // Users collection
     match /users/{userId} {
       allow read: if isSignedIn() && isOwner(userId);
@@ -49,14 +55,6 @@ service cloud.firestore {
           isValidTimestamp(request.resource.data.startDate) &&
           isValidTimestamp(request.resource.data.endDate) &&
           request.resource.data.startDate < request.resource.data.endDate;
-        allow update: if isSignedIn() && isOwner(userId);
-        allow delete: if isSignedIn() && isOwner(userId);
-      }
-
-      // Categories subcollection
-      match /categories/{categoryId} {
-        allow read: if isSignedIn() && isOwner(userId);
-        allow create: if isSignedIn() && isOwner(userId);
         allow update: if isSignedIn() && isOwner(userId);
         allow delete: if isSignedIn() && isOwner(userId);
       }

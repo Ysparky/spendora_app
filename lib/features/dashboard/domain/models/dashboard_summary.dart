@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:spendora_app/features/transactions/domain/models/category.dart';
 
 part 'dashboard_summary.freezed.dart';
 part 'dashboard_summary.g.dart';
@@ -29,7 +30,9 @@ abstract class CurrencyTotal with _$CurrencyTotal {
 }
 
 @freezed
-abstract class CategorySummary with _$CategorySummary {
+abstract class CategorySummary with _$CategorySummary, CategoryMixin {
+  const CategorySummary._();
+
   const factory CategorySummary({
     required String categoryId,
     required String name,
@@ -37,6 +40,7 @@ abstract class CategorySummary with _$CategorySummary {
     required double amount,
     required double percentage,
     required String currency,
+    @Default({}) Map<String, String> translations,
   }) = _CategorySummary;
 
   factory CategorySummary.fromJson(Map<String, dynamic> json) =>
