@@ -26,22 +26,16 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
 
-  // Initialize Firebase first
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // Then initialize App Check
   await FirebaseAppCheck.instance.activate(
-    // Use debug provider for development
     androidProvider: kDebugMode
         ? AndroidProvider.debug
         : AndroidProvider.playIntegrity,
     appleProvider: kDebugMode ? AppleProvider.debug : AppleProvider.deviceCheck,
   );
 
-  // Initialize dependencies
   await setupDependencies();
 
-  // Initialize router with AuthProvider
   AppRouter.initialize(sl<AuthProvider>());
 
   runApp(const SpendoraApp());

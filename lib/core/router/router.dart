@@ -56,7 +56,6 @@ class AppRouter {
           name: 'settings',
           builder: (context, state) => const SettingsScreen(),
         ),
-        // Add more routes here for authenticated screens
         GoRoute(
           path: transactions,
           name: 'transactions',
@@ -100,7 +99,6 @@ class AppRouter {
         ),
       ],
     );
-    debugPrint('AppRouter: Initialization complete');
   }
 
   static GoRouter get router => _router;

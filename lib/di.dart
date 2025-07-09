@@ -92,9 +92,8 @@ void _initializeBudgets() {
 
   // Repositories
 
-  // Use cases
-
   // ViewModels
+  // TODO: Add budget viewmodel
 }
 
 void _initializeReports() {
@@ -102,9 +101,8 @@ void _initializeReports() {
 
   // Repositories
 
-  // Use cases
-
   // ViewModels
+  // TODO: Add report viewmodel
 }
 
 void _initializeSettings() {

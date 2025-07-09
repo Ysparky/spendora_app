@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class CurrencyConversionService extends ChangeNotifier {
-  final String apiKey; // From environment config
+  final String apiKey;
   final String baseUrl = 'https://api.exchangerate-api.com/v4/latest/';
 
   CurrencyConversionService({required this.apiKey});
